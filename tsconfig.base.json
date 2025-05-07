@@ -1,0 +1,32 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "lib": ["ESNext", "DOM"],
+    "moduleResolution": "Node",
+    "rootDir": ".",
+    "baseUrl": ".",
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "paths": {
+      // Shared “types” library (your common interfaces)
+      "@recipe-explorer/common": ["libs/common/src/index.ts"],
+      // Client app imports
+      "@recipe-explorer/client/*": ["apps/client/src/*"],
+      // Server app imports
+      "@recipe-explorer/server/*": ["apps/server/src/*"]
+    }
+  },
+  "exclude": [
+    "node_modules",
+    "dist",
+    "tmp",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ]
+}

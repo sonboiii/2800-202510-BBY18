@@ -1,0 +1,15 @@
+{
+  "npmScope": "recipe-explorer",
+  "implicitDependencies": {
+    "workspace.json": "*",
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    }
+  },
+  "projects": {
+    "client": {},
+    "server": {},
+    "common": {}
+  }
+}

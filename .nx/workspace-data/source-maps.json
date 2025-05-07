@@ -1,0 +1,180 @@
+{
+  "apps/client": {
+    "root": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.executor": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.outputPath": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.configFile": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.executor": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.configFile": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.executor": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.options": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.options.lintFilePatterns": [
+      "apps/client/project.json",
+      "nx/core/project-json"
+    ]
+  },
+  "apps/server": {
+    "root": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.executor": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.outputs": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.outputPath": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.main": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.build.options.tsConfig": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.executor": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.serve.options.buildTarget": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.executor": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.options": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ],
+    "targets.lint.options.lintFilePatterns": [
+      "apps/server/project.json",
+      "nx/core/project-json"
+    ]
+  },
+  "libs/common": {
+    "root": [
+      "libs/common/project.json",
+      "nx/core/project-json"
+    ],
+    "name": [
+      "libs/common/project.json",
+      "nx/core/project-json"
+    ],
+    "sourceRoot": [
+      "libs/common/project.json",
+      "nx/core/project-json"
+    ],
+    "projectType": [
+      "libs/common/project.json",
+      "nx/core/project-json"
+    ],
+    "targets": [
+      "libs/common/project.json",
+      "nx/core/project-json"
+    ]
+  }
+}

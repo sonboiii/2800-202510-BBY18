@@ -1,0 +1,136 @@
+{
+  "version": "6.0",
+  "nxVersion": "21.0.1",
+  "pathMappings": {
+    "@recipe-explorer/common": [
+      "libs/common/src/index.ts"
+    ],
+    "@recipe-explorer/client/*": [
+      "apps/client/src/*"
+    ],
+    "@recipe-explorer/server/*": [
+      "apps/server/src/*"
+    ]
+  },
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {
+      "common": [
+        {
+          "file": "libs/common/project.json",
+          "hash": "17835367332855711009"
+        },
+        {
+          "file": "libs/common/src/index.ts",
+          "hash": "1511188995688581157"
+        },
+        {
+          "file": "libs/common/tsconfig.json",
+          "hash": "3988164656782385067"
+        }
+      ],
+      "server": [
+        {
+          "file": "apps/server/project.json",
+          "hash": "9775090698313591742"
+        },
+        {
+          "file": "apps/server/src/index.ts",
+          "hash": "14879655253570665708"
+        },
+        {
+          "file": "apps/server/tsconfig.json",
+          "hash": "3988164656782385067"
+        }
+      ],
+      "client": [
+        {
+          "file": "apps/client/project.json",
+          "hash": "16087304748180810595"
+        },
+        {
+          "file": "apps/client/src/App.tsx",
+          "hash": "16597011408590835652"
+        },
+        {
+          "file": "apps/client/src/main.tsx",
+          "hash": "14121782794347608889"
+        },
+        {
+          "file": "apps/client/src/pages/Dashboard.tsx",
+          "hash": "1179136751206732078"
+        },
+        {
+          "file": "apps/client/src/pages/Landing.tsx",
+          "hash": "8089616284547010093"
+        },
+        {
+          "file": "apps/client/src/styles/globals.css",
+          "hash": "6077380160330481701"
+        },
+        {
+          "file": "apps/client/tsconfig.json",
+          "hash": "13029830649624941048"
+        },
+        {
+          "file": "apps/client/vite.config.ts",
+          "hash": "3638736510459158176"
+        }
+      ]
+    },
+    "nonProjectFiles": [
+      {
+        "file": ".eslintrc.js",
+        "hash": "3821084691906937490"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "15846761144658054931"
+      },
+      {
+        "file": ".idea/.gitignore",
+        "hash": "5255412931663222636"
+      },
+      {
+        "file": ".idea/2800-202510-BBY18.iml",
+        "hash": "17628044544001142833"
+      },
+      {
+        "file": ".idea/git_toolbox_blame.xml",
+        "hash": "15216982651248308995"
+      },
+      {
+        "file": ".idea/material_theme_project_new.xml",
+        "hash": "11994319199217310293"
+      },
+      {
+        "file": ".idea/modules.xml",
+        "hash": "14410336805998040818"
+      },
+      {
+        "file": ".idea/vcs.xml",
+        "hash": "13076890194361308264"
+      },
+      {
+        "file": "nx.json",
+        "hash": "7552508429666232154"
+      },
+      {
+        "file": "package.json",
+        "hash": "7677008577053137237"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "5371188076304299032"
+      },
+      {
+        "file": "workspace.json",
+        "hash": "15205847397780040032"
+      },
+      {
+        "file": "yarn.lock",
+        "hash": "16850215206142782577"
+      }
+    ]
+  }
+}

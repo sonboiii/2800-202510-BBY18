@@ -1,0 +1,29 @@
+{
+  "root": "apps/client",
+  "sourceRoot": "apps/client/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/vite:build",
+      "options": {
+        "outputPath": "dist/apps/client",
+        "configFile": "apps/client/vite.config.ts"
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/vite:dev-server",
+      "options": {
+        "configFile": "apps/client/vite.config.ts"
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "apps/client/**/*.ts",
+          "apps/client/**/*.tsx"
+        ]
+      }
+    }
+  }
+}
