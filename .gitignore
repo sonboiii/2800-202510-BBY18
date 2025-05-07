@@ -154,3 +154,19 @@ tmp/
 
 # Nx cache
 .nx/cache/
+
+# JetBrains IDE
+.idea/
+
+# Nx cache and output
+.nx/
+dist/
+build/
+.out-tsc/
+
+# Node modules & locks
+node_modules/
+yarn.lock
+
+# Env files
+.env
