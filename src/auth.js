@@ -62,33 +62,43 @@ router.post('/signup', async (req, res) => {
 });
 
 router.get('/login', (req, res) => {
-  res.render('login', { message: null });
+    return res.render('login', { message: 'Invalid email/password combination' });
 });
 
 router.post('/login', async (req, res) => {
-  const schema = Joi.object({
-    email: Joi.string().email().required(),
-    password: Joi.string().required()
-  });
-
-  const { error, value } = schema.validate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
-
-  try {
-    const users = db.collection('users');
-    const user = await users.findOne({ email: value.email });
-
-    if (!user || !(await bcrypt.compare(value.password, user.password))) {
-      return res.render('login', { message: 'Invalid email/password combination' });
+    const schema = Joi.object({
+      email: Joi.string().email().required(),
+      password: Joi.string().required()
+    });
+  
+    let body = req.body;
+    if (req.is('application/json')) {
+      body = await new Promise((resolve) => {
+        let data = '';
+        req.on('data', chunk => data += chunk);
+        req.on('end', () => resolve(JSON.parse(data)));
+      });
     }
-
-    req.session.user = { name: user.name, email: user.email };
-    res.redirect('/home');
-  } catch (err) {
-    console.error('Login error:', err);
-    res.status(500).render('login', { message: 'Error logging in' });
-  }
-});
+  
+    const { error, value } = schema.validate(body);
+    if (error) return res.status(400).send(error.details[0].message);
+  
+    try {
+      const users = db.collection('users');
+      const user = await users.findOne({ email: value.email });
+  
+      if (!user || !(await bcrypt.compare(value.password, user.password))) {
+        return res.status(401).send('Invalid email/password combination');
+      }
+  
+      req.session.user = { name: user.name, email: user.email };
+      return res.redirect('/home'); // triggers client-side redirect
+    } catch (err) {
+      console.error('Login error:', err);
+      res.status(500).send('Error logging in');
+    }
+  });
+  
 
 router.get('/logout', (req, res) => {
   req.session.destroy((err) => {
