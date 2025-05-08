@@ -15,54 +15,54 @@
   "nxJsonPlugins": [],
   "fileMap": {
     "projectFileMap": {
-      "common": [
-        {
-          "file": "libs/common/project.json",
-          "hash": "17835367332855711009"
-        },
-        {
-          "file": "libs/common/src/index.ts",
-          "hash": "1511188995688581157"
-        },
-        {
-          "file": "libs/common/tsconfig.json",
-          "hash": "3988164656782385067"
-        }
-      ],
       "server": [
         {
           "file": "apps/server/project.json",
-          "hash": "9775090698313591742"
+          "hash": "10029050448806624287"
         },
         {
           "file": "apps/server/src/index.ts",
-          "hash": "14879655253570665708"
+          "hash": "1456966953976570585"
         },
         {
           "file": "apps/server/tsconfig.json",
-          "hash": "3988164656782385067"
+          "hash": "9720457214751324275"
+        }
+      ],
+      "common": [
+        {
+          "file": "libs/common/project.json",
+          "hash": "11025245436417989222"
+        },
+        {
+          "file": "libs/common/src/index.ts",
+          "hash": "12529781701926610645"
+        },
+        {
+          "file": "libs/common/tsconfig.json",
+          "hash": "9720457214751324275"
         }
       ],
       "client": [
         {
           "file": "apps/client/project.json",
-          "hash": "16087304748180810595"
+          "hash": "18173426874764070419"
         },
         {
           "file": "apps/client/src/App.tsx",
-          "hash": "16597011408590835652"
+          "hash": "102325550601015081"
         },
         {
           "file": "apps/client/src/main.tsx",
-          "hash": "14121782794347608889"
+          "hash": "475941077114815724"
         },
         {
           "file": "apps/client/src/pages/Dashboard.tsx",
-          "hash": "1179136751206732078"
+          "hash": "11356683202005416116"
         },
         {
           "file": "apps/client/src/pages/Landing.tsx",
-          "hash": "8089616284547010093"
+          "hash": "2368607034038542893"
         },
         {
           "file": "apps/client/src/styles/globals.css",
@@ -70,66 +70,46 @@
         },
         {
           "file": "apps/client/tsconfig.json",
-          "hash": "13029830649624941048"
+          "hash": "14525433894342897875"
         },
         {
           "file": "apps/client/vite.config.ts",
-          "hash": "3638736510459158176"
+          "hash": "4282412371704145172"
         }
       ]
     },
     "nonProjectFiles": [
       {
         "file": ".eslintrc.js",
-        "hash": "3821084691906937490"
+        "hash": "1889611414156533038"
       },
       {
         "file": ".gitignore",
-        "hash": "15846761144658054931"
+        "hash": "17567978132271864413"
       },
       {
-        "file": ".idea/.gitignore",
-        "hash": "5255412931663222636"
+        "file": ".yarn/releases/yarn-4.9.1.cjs",
+        "hash": "3287485768833251469"
       },
       {
-        "file": ".idea/2800-202510-BBY18.iml",
-        "hash": "17628044544001142833"
-      },
-      {
-        "file": ".idea/git_toolbox_blame.xml",
-        "hash": "15216982651248308995"
-      },
-      {
-        "file": ".idea/material_theme_project_new.xml",
-        "hash": "11994319199217310293"
-      },
-      {
-        "file": ".idea/modules.xml",
-        "hash": "14410336805998040818"
-      },
-      {
-        "file": ".idea/vcs.xml",
-        "hash": "13076890194361308264"
+        "file": ".yarnrc.yml",
+        "hash": "11535753171780909388"
       },
       {
         "file": "nx.json",
-        "hash": "7552508429666232154"
+        "hash": "3145219157549432320"
       },
       {
         "file": "package.json",
-        "hash": "7677008577053137237"
+        "hash": "9851298544138026296"
       },
       {
         "file": "tsconfig.base.json",
-        "hash": "5371188076304299032"
+        "hash": "6840257637490003602"
       },
       {
         "file": "workspace.json",
-        "hash": "15205847397780040032"
-      },
-      {
-        "file": "yarn.lock",
-        "hash": "16850215206142782577"
+        "hash": "7065153200829718895"
       }
     ]
   }
