@@ -8,15 +8,107 @@
       "apps/client/project.json",
       "nx/core/project-json"
     ],
+    "tags": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "tags.npm:private": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.0": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.1": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageName": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.isInPackageManagerWorkspaces": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.executor": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.options": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.metadata": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.options.script": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.metadata.scriptContent": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.metadata.runCommand": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.executor": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.options": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.metadata": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.options.script": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.metadata.scriptContent": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.preview.metadata.runCommand": [
+      "apps/client/package.json",
+      "nx/core/package-json"
+    ],
     "sourceRoot": [
       "apps/client/project.json",
       "nx/core/project-json"
     ],
     "projectType": [
-      "apps/client/project.json",
-      "nx/core/project-json"
-    ],
-    "targets": [
       "apps/client/project.json",
       "nx/core/project-json"
     ],
@@ -82,15 +174,107 @@
       "apps/server/project.json",
       "nx/core/project-json"
     ],
+    "tags": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "tags.npm:private": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.0": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.1": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageName": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.isInPackageManagerWorkspaces": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.executor": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.options": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.metadata": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.options.script": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.metadata.scriptContent": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.dev.metadata.runCommand": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.start": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.start.executor": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.start.options": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.start.metadata": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.start.options.script": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.start.metadata.scriptContent": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.start.metadata.runCommand": [
+      "apps/server/package.json",
+      "nx/core/package-json"
+    ],
     "sourceRoot": [
       "apps/server/project.json",
       "nx/core/project-json"
     ],
     "projectType": [
-      "apps/server/project.json",
-      "nx/core/project-json"
-    ],
-    "targets": [
       "apps/server/project.json",
       "nx/core/project-json"
     ],
@@ -164,15 +348,83 @@
       "libs/common/project.json",
       "nx/core/project-json"
     ],
+    "tags": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "tags.npm:private": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.targetGroups.NPM Scripts.0": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.description": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageName": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.packageMain": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "metadata.js.isInPackageManagerWorkspaces": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "targets": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.test": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.test.executor": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.test.options": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.test.metadata": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.test.options.script": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.test.metadata.scriptContent": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
+    "targets.test.metadata.runCommand": [
+      "libs/common/package.json",
+      "nx/core/package-json"
+    ],
     "sourceRoot": [
       "libs/common/project.json",
       "nx/core/project-json"
     ],
     "projectType": [
-      "libs/common/project.json",
-      "nx/core/project-json"
-    ],
-    "targets": [
       "libs/common/project.json",
       "nx/core/project-json"
     ]

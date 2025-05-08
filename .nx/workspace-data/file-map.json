@@ -1,6 +1,6 @@
 {
   "version": "6.0",
-  "nxVersion": "21.0.1",
+  "nxVersion": "21.0.2",
   "pathMappings": {
     "@recipe-explorer/common": [
       "libs/common/src/index.ts"
@@ -14,22 +14,50 @@
   },
   "nxJsonPlugins": [],
   "fileMap": {
+    "nonProjectFiles": [
+      {
+        "file": ".eslintrc.js",
+        "hash": "1889611414156533038"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "17567978132271864413"
+      },
+      {
+        "file": ".yarn/releases/yarn-4.9.1.cjs",
+        "hash": "6217701321368439866"
+      },
+      {
+        "file": ".yarnrc.yml",
+        "hash": "14808503357847290903"
+      },
+      {
+        "file": "nx.json",
+        "hash": "3145219157549432320"
+      },
+      {
+        "file": "package-lock.json",
+        "hash": "10160200980687855836"
+      },
+      {
+        "file": "package.json",
+        "hash": "6262942866591836938"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "6840257637490003602"
+      },
+      {
+        "file": "workspace.json",
+        "hash": "7065153200829718895"
+      }
+    ],
     "projectFileMap": {
-      "server": [
-        {
-          "file": "apps/server/project.json",
-          "hash": "10029050448806624287"
-        },
-        {
-          "file": "apps/server/src/index.ts",
-          "hash": "1456966953976570585"
-        },
-        {
-          "file": "apps/server/tsconfig.json",
-          "hash": "9720457214751324275"
-        }
-      ],
       "common": [
+        {
+          "file": "libs/common/package.json",
+          "hash": "6555808089500741158"
+        },
         {
           "file": "libs/common/project.json",
           "hash": "11025245436417989222"
@@ -43,7 +71,29 @@
           "hash": "9720457214751324275"
         }
       ],
-      "client": [
+      "@recipe-explorer/server": [
+        {
+          "file": "apps/server/package.json",
+          "hash": "8947390432902197690"
+        },
+        {
+          "file": "apps/server/project.json",
+          "hash": "10029050448806624287"
+        },
+        {
+          "file": "apps/server/src/index.ts",
+          "hash": "1456966953976570585"
+        },
+        {
+          "file": "apps/server/tsconfig.json",
+          "hash": "9720457214751324275"
+        }
+      ],
+      "@recipe-explorer/client": [
+        {
+          "file": "apps/client/package.json",
+          "hash": "1914826151311905230"
+        },
         {
           "file": "apps/client/project.json",
           "hash": "18173426874764070419"
@@ -77,40 +127,6 @@
           "hash": "4282412371704145172"
         }
       ]
-    },
-    "nonProjectFiles": [
-      {
-        "file": ".eslintrc.js",
-        "hash": "1889611414156533038"
-      },
-      {
-        "file": ".gitignore",
-        "hash": "17567978132271864413"
-      },
-      {
-        "file": ".yarn/releases/yarn-4.9.1.cjs",
-        "hash": "3287485768833251469"
-      },
-      {
-        "file": ".yarnrc.yml",
-        "hash": "11535753171780909388"
-      },
-      {
-        "file": "nx.json",
-        "hash": "3145219157549432320"
-      },
-      {
-        "file": "package.json",
-        "hash": "9851298544138026296"
-      },
-      {
-        "file": "tsconfig.base.json",
-        "hash": "6840257637490003602"
-      },
-      {
-        "file": "workspace.json",
-        "hash": "7065153200829718895"
-      }
-    ]
+    }
   }
 }

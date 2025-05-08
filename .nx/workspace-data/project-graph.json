@@ -1,14 +1,51 @@
 {
   "nodes": {
-    "client": {
-      "name": "client",
+    "@recipe-explorer/client": {
+      "name": "@recipe-explorer/client",
       "type": "app",
       "data": {
         "root": "apps/client",
-        "name": "client",
-        "sourceRoot": "apps/client/src",
-        "projectType": "application",
+        "name": "@recipe-explorer/client",
+        "tags": [
+          "npm:private"
+        ],
+        "metadata": {
+          "targetGroups": {
+            "NPM Scripts": [
+              "dev",
+              "preview"
+            ]
+          },
+          "js": {
+            "packageName": "@recipe-explorer/client",
+            "isInPackageManagerWorkspaces": true
+          }
+        },
         "targets": {
+          "dev": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "dev"
+            },
+            "metadata": {
+              "scriptContent": "vite",
+              "runCommand": "yarn dev"
+            },
+            "configurations": {},
+            "parallelism": true
+          },
+          "preview": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "preview"
+            },
+            "metadata": {
+              "scriptContent": "vite preview",
+              "runCommand": "yarn preview"
+            },
+            "configurations": {},
+            "parallelism": true
+          },
           "build": {
             "executor": "@nrwl/vite:build",
             "options": {
@@ -38,32 +75,57 @@
             "parallelism": true
           }
         },
-        "implicitDependencies": [],
-        "tags": []
+        "sourceRoot": "apps/client/src",
+        "projectType": "application",
+        "implicitDependencies": []
       }
     },
-    "common": {
-      "name": "common",
-      "type": "lib",
-      "data": {
-        "root": "libs/common",
-        "name": "common",
-        "sourceRoot": "libs/common/src",
-        "projectType": "library",
-        "targets": {},
-        "implicitDependencies": [],
-        "tags": []
-      }
-    },
-    "server": {
-      "name": "server",
+    "@recipe-explorer/server": {
+      "name": "@recipe-explorer/server",
       "type": "app",
       "data": {
         "root": "apps/server",
-        "name": "server",
-        "sourceRoot": "apps/server/src",
-        "projectType": "application",
+        "name": "@recipe-explorer/server",
+        "tags": [
+          "npm:private"
+        ],
+        "metadata": {
+          "targetGroups": {
+            "NPM Scripts": [
+              "dev",
+              "start"
+            ]
+          },
+          "js": {
+            "packageName": "@recipe-explorer/server",
+            "isInPackageManagerWorkspaces": true
+          }
+        },
         "targets": {
+          "dev": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "dev"
+            },
+            "metadata": {
+              "scriptContent": "ts-node-dev --respawn --transpile-only src/index.ts",
+              "runCommand": "yarn dev"
+            },
+            "configurations": {},
+            "parallelism": true
+          },
+          "start": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "start"
+            },
+            "metadata": {
+              "scriptContent": "node dist/index.js",
+              "runCommand": "yarn start"
+            },
+            "configurations": {},
+            "parallelism": true
+          },
           "build": {
             "executor": "@nrwl/node:build",
             "outputs": [
@@ -96,18 +158,60 @@
             "parallelism": true
           }
         },
-        "implicitDependencies": [],
-        "tags": []
+        "sourceRoot": "apps/server/src",
+        "projectType": "application",
+        "implicitDependencies": []
+      }
+    },
+    "common": {
+      "name": "common",
+      "type": "lib",
+      "data": {
+        "root": "libs/common",
+        "name": "common",
+        "tags": [
+          "npm:private"
+        ],
+        "metadata": {
+          "targetGroups": {
+            "NPM Scripts": [
+              "test"
+            ]
+          },
+          "description": "",
+          "js": {
+            "packageName": "common",
+            "packageMain": "src/index.ts",
+            "isInPackageManagerWorkspaces": true
+          }
+        },
+        "targets": {
+          "test": {
+            "executor": "nx:run-script",
+            "options": {
+              "script": "test"
+            },
+            "metadata": {
+              "scriptContent": "echo \"Error: no test specified\" && exit 1",
+              "runCommand": "yarn test"
+            },
+            "configurations": {},
+            "parallelism": true
+          }
+        },
+        "sourceRoot": "libs/common/src",
+        "projectType": "library",
+        "implicitDependencies": []
       }
     }
   },
   "externalNodes": {},
   "dependencies": {
-    "client": [],
-    "common": [],
-    "server": []
+    "@recipe-explorer/client": [],
+    "@recipe-explorer/server": [],
+    "common": []
   },
   "version": "6.0",
   "errors": [],
-  "computedAt": 1746667965860
+  "computedAt": 1746744728089
 }
