@@ -1,0 +1,9 @@
+<%- include('templates/header', { title: 'Dashboard' }) %>
+
+<div class="text-center">
+  <h1 class="mb-3">Goodmorning, <%= user.name %>!</h1>
+  <p class="lead">This is your personalized homepage.</p>
+  <a href="/logout" class="btn btn-outline-danger mt-3">Logout</a>
+</div>
+
+<%- include('templates/footer') %>
