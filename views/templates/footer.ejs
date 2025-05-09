@@ -8,6 +8,13 @@
   </div>
 </footer>
 
+<!-- Loads various JS files -->
+<% if (typeof jsFiles !== 'undefined' && jsFiles.length > 0) { %>
+    <% jsFiles.forEach(file => { %>
+        <script src="<%= file %>"></script>
+    <% }) %>
+<% } %>
+
 <!-- Three.js CDN -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
