@@ -1,13 +1,17 @@
 <%- include('templates/header', { title: 'Dashboard' }) %>
 
 <div class="text-center">
-  <h1 class="mb-3">Goodmorning, <%= user.name %>!</h1>
-  <p class="lead">This is your personalized homepage.</p>
-  <button id="store-btn" class="btn btn-primary w-100">Closest Store</button>
-  <a href="/logout" class="btn btn-outline-danger mt-3">Logout</a>
+    <h2 id="greeting" class="mb-5 fw-bold" data-username="<%= user?.name || '' %>!"></h2>
+    <h3 id="location" class="text-center fs-8 fw-bold text-muted"></h3>
+    <h3 id="current-time" class="text-center fs-8 fw-bold text-secondary"></h3>
+    <h3 id="meal-time-msg" class="text-center  fs-8 fw-bold text-muted"></h3> 
+    <button id="store-btn" class="btn btn-primary mt-3">Closest Store</button>
+    <a href="/logout" class="btn btn-outline-danger mt-3">Logout</a>
 </div>
 
-<%- include('templates/footer') %>
+<%- include('templates/footer', {
+jsFiles: ['/js/location.js', '/js/greeting_time.js']
+}) %>
 
 <script>
   document.getElementById('store-btn').addEventListener('click', function(e) {
@@ -15,3 +19,5 @@
     window.location.href = '/stores';
   });
 </script>
+
+
