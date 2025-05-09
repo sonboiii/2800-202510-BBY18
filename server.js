@@ -45,25 +45,25 @@ function requireLogin(req, res, next) {
 }
 
 app.get('/home', requireLogin, (req, res) => {
-  res.render('home', { user: req.session.user });
+  res.render('home', { title: 'Home', user: req.session.user });
 });
 
 
 /* Routes Section */
 app.get('/', (req, res) => {
-  res.render('index');
+  res.render('index', { title: 'Home' });
 });
 
 app.get('/login', (req, res) => {
-  res.render('login');
+  res.render('login', { title: 'Login' });
 });
 
 app.get('/about', (req, res) => {
-  res.render('about');
+  res.render('about', { title: 'About' });
 });
 
 app.get('/signup', (req, res) => {
-  res.render('signup');
+  res.render('signup', { title: 'Sign Up' });
 });
 
 app.get('/logout', (req, res) => {
@@ -78,7 +78,7 @@ app.get('/logout', (req, res) => {
 });
 
 app.get('/home', auth.requireLogin, (req, res) => {
-  res.render('home', { user: req.session.user });
+  res.render('home', { title: 'Home', user: req.session.user });
 });
 
 
@@ -130,7 +130,7 @@ app.get('/stores', async (req, res, next) => {
     }));
 
     // 5️⃣ Render with exactly one lat/lon and stores
-    res.render('stores', { lat, lon, stores });
+    res.render('stores', { title: 'Nearby Stores', lat, lon, stores });
 
   } catch (err) {
     next(err);
@@ -173,7 +173,7 @@ app.get('/weather', async (req, res) => {
 
 app.use(function (req, res) {
   res.status(404);
-  res.render('404');
+  res.render('404', { title: 'Page Not Found' });
 });
 
 app.listen(PORT, () => {

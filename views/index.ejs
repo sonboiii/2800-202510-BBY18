@@ -1,11 +1,18 @@
-<%- include('templates/header', { title: 'Home' }) %>
+<%- include("templates/header") %>
 
-<% if (typeof user !== 'undefined') { %>
-  <h2 class="text-center">Welcome back!</h2>
-  <p class="text-center">You're logged in as <strong><%= user.email %></strong>.</p>
-<% } else { %>
-  <h2 class="text-center">Welcome to Foodie</h2>
-  <p class="text-center"><a href="/login">Login</a> or <a href="/signup">Sign Up</a> to get started.</p>
-<% } %>
+<main>
+  <h1 class="text-center text-orange">Welcome to Foodie</h1>
+  <p class="text-center text-orange">Find your next favorite meal, wherever you are.</p>
 
-<%- include('templates/footer') %>
+  <!-- Three.js donut animation -->
+  <div id="three-container"></div>
+
+  <!-- Button -->
+  <div class="text-center mt-3">
+    <a href="/login" class="btn btn-orange">Get Started</a>
+  </div>
+
+
+</main>
+
+<%- include("templates/footer") %>

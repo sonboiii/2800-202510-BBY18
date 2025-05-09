@@ -1,8 +1,43 @@
-<% if (typeof jsFiles !== 'undefined' && jsFiles.length > 0) { %>
-    <% jsFiles.forEach(file => { %>
-        <script src="<%= file %>"></script>
-    <% }) %>
-<% } %>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<footer class="text-center mt-auto py-3 bg-dark text-white">
+    <p>&copy; 2025 Foodie</p>
+</footer>
+
+<!-- Three.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
+
+<!-- Donut animation (DOM-safe) -->
+<script>
+    window.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById('three-container');
+        if (!container) return;
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ alpha: true });
+        renderer.setSize(200, 200);
+        container.appendChild(renderer.domElement);
+
+        const geometry = new THREE.TorusGeometry(1, 0.4, 16, 100);
+        const material = new THREE.MeshStandardMaterial({ color: 0xff6f00 });
+        const donut = new THREE.Mesh(geometry, material);
+        scene.add(donut);
+
+        const light = new THREE.PointLight(0xffffff, 1, 100);
+        light.position.set(5, 5, 5);
+        scene.add(light);
+
+        camera.position.z = 5;
+
+        function animate() {
+            requestAnimationFrame(animate);
+            donut.rotation.x += 0.01;
+            donut.rotation.y += 0.01;
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    });
+</script>
+
 </body>
 </html>
