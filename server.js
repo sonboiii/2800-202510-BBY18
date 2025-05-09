@@ -44,6 +44,47 @@ function requireLogin(req, res, next) {
   next();
 }
 
+function toRad(deg) {
+  return (deg * Math.PI) / 180;
+}
+
+// Haversine formula: distance (km) between two lat/lon pairs
+function getDistanceKm(lat1, lon1, lat2, lon2) {
+  const R = 6371; // Earth radius in km
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.sin(dLon / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+// Fetch nearby “stores” via Overpass API (example: supermarkets within 5 km)
+async function findNearbyStores(lat, lon) {
+  const radius = 5000; // meters
+  const query = `
+    [out:json];
+    node["shop"="supermarket"](around:${radius},${lat},${lon});
+    out;`;
+  const url =
+      'https://overpass-api.de/api/interpreter?data=' +
+      encodeURIComponent(query);
+
+  const res = await fetch(url);
+  const json = await res.json();
+
+  // Map each node → { name, distance } and sort by distance
+  return (json.elements || [])
+      .map((node) => ({
+        name: node.tags.name || 'Unknown',
+        distance: getDistanceKm(lat, lon, node.lat, node.lon),
+      }))
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 10); // top 10
+}
+
 app.get('/home', requireLogin, (req, res) => {
   res.render('home', { user: req.session.user });
 });
@@ -82,60 +123,71 @@ app.get('/home', auth.requireLogin, (req, res) => {
 });
 
 
+// server.js (or wherever you define /stores)
 app.get('/stores', async (req, res, next) => {
+  console.log('→ [stores] route hit with query:', req.query);
+
   try {
-    // 1️⃣ Check for precise client-side override
     let lat, lon;
+
     if (req.query.lat && req.query.lon) {
       lat = parseFloat(req.query.lat);
       lon = parseFloat(req.query.lon);
-
+      console.log(`   using precise coords: ${lat}, ${lon}`);
     } else {
-      // 2️⃣ Single, robust IP-based lookup
+      console.log('   falling back to IP lookup');
       const rawIp = (req.headers['x-forwarded-for'] || req.socket.remoteAddress)
           .split(',')[0].trim();
-      let geo;
-
-      // 2a) Try geolocating that specific IP
+      let geo = {};
       try {
-        const resp1 = await fetch(`https://ipapi.co/${rawIp}/json/`);
-        geo = await resp1.json();
+        const resp = await fetch('https://ipapi.co/json/');
+        geo = await resp.json();
         if (geo.error) throw new Error(geo.reason);
-      } catch {
-        // 2b) Fallback to “whoever made the request”
-        const resp2 = await fetch('https://ipapi.co/json/');
-        geo = await resp2.json();
+      } catch (err) {
+        console.warn('✖ ipapi failed:', err.message);
       }
 
-      lat = parseFloat(geo.latitude)  || 0;
-      lon = parseFloat(geo.longitude) || 0;
+// If we didn’t actually get valid coords, skip the store lookup
+      if (!geo.latitude || !geo.longitude) {
+        console.warn('⚠️  No coords from IP lookup, rendering empty stores.');
+        return res.render('stores', {
+          stores: [],
+          locationError: true
+        });
+      }
+
+      const lat = parseFloat(geo.latitude);
+      const lon = parseFloat(geo.longitude);
+
+      // after the geo‐lookup guard above...
+      const stores = await findNearbyStores(lat, lon);
+      res.render('stores', {
+        stores,
+        locationError: false
+      });
+
+
+      console.log(`   IP lookup gave: ${lat}, ${lon}`);
     }
 
-    // 3️⃣ POI lookup (Overpass)
-    const overpassQuery = `
-      [out:json][timeout:10];
-      node["shop"~"supermarket|grocery"](around:1000,${lat},${lon});
-      out center;
-    `;
-    const poiUrl  = 'https://overpass-api.de/api/interpreter?data='
-        + encodeURIComponent(overpassQuery);
-    const poiResp = await fetch(poiUrl);
-    const poiData = await poiResp.json();
+    console.log('   fetching nearby stores…');
+    const stores = await findNearbyStores(lat, lon);
+    console.log(`   got ${stores.length} stores`);
 
-    // 4️⃣ Normalize store data
-    const stores = poiData.elements.map(el => ({
-      name: el.tags?.name || 'Unnamed store',
-      lat:  el.type === 'node' ? el.lat       : el.center.lat,
-      lon:  el.type === 'node' ? el.lon       : el.center.lon
-    }));
+    if (req.accepts('json') || req.query.format === 'json') {
+      return res.json(stores);
+    }
 
-    // 5️⃣ Render with exactly one lat/lon and stores
-    res.render('stores', { lat, lon, stores });
-
-  } catch (err) {
-    next(err);
+    res.render('stores', { stores });
+  }
+  catch (err) {
+    console.error('‼️ Error in /stores handler:', err);
+    // send a simple 500 so you don’t stay blank
+    return res.status(500).send('Internal server error, check console');
   }
 });
+
+
 
 
 
