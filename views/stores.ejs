@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Nearby Grocery Stores</title>
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    />
+    <style>
+        html, body { margin:0; padding:0; height:100%; }
+        #map { width:100%; height:100%; }
+        #enable-loc {
+            position: absolute;
+            top: 10px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: .5em 1em;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<!-- Button to trigger geolocation prompt -->
+<button id="enable-loc">Enable Precise Location</button>
+
+<div id="map"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<script>
+    // These come from the server render:
+    const serverLat = <%= lat %>;
+    const serverLon = <%= lon %>;
+    const stores    = <%- JSON.stringify(stores) %>;
+
+    // Initialize the map once with whatever coords we have
+    const map = L.map('map').setView([serverLat, serverLon], 15);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    L.marker([serverLat, serverLon])
+        .addTo(map)
+        .bindPopup('Approximate location')
+        .openPopup();
+    stores.forEach(s =>
+        L.marker([s.lat, s.lon]).addTo(map).bindPopup(s.name)
+    );
+
+    // When user clicks the button, ask for HTML5 geolocation
+    document.getElementById('enable-loc').onclick = () => {
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser');
+            return;
+        }
+        navigator.geolocation.getCurrentPosition(
+            ({ coords }) => {
+                const lat = coords.latitude;
+                const lon = coords.longitude;
+                // Redirect to same route with precise coords in query-string
+                const qs = new URLSearchParams({ lat, lon });
+                window.location.search = qs.toString();
+            },
+            (err) => {
+                alert('Could not retrieve your location: ' + err.message);
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    };
+</script>
+</body>
+</html>

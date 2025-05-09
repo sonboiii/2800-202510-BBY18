@@ -3,7 +3,15 @@
 <div class="text-center">
   <h1 class="mb-3">Goodmorning, <%= user.name %>!</h1>
   <p class="lead">This is your personalized homepage.</p>
+  <button id="store-btn" class="btn btn-primary w-100">Closest Store</button>
   <a href="/logout" class="btn btn-outline-danger mt-3">Logout</a>
 </div>
 
 <%- include('templates/footer') %>
+
+<script>
+  document.getElementById('store-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = '/stores';
+  });
+</script>

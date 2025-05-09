@@ -6,6 +6,7 @@ const path = require('path');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const auth = require('./src/auth');
+const fetch   = require('node-fetch');      // v2.x
 
 
 const app = express();
@@ -15,7 +16,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
-
+app.set('trust proxy', true);
 
 
 const mongoUri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}` +
@@ -79,6 +80,64 @@ app.get('/logout', (req, res) => {
 app.get('/home', auth.requireLogin, (req, res) => {
   res.render('home', { user: req.session.user });
 });
+
+
+app.get('/stores', async (req, res, next) => {
+  try {
+    // 1️⃣ Check for precise client-side override
+    let lat, lon;
+    if (req.query.lat && req.query.lon) {
+      lat = parseFloat(req.query.lat);
+      lon = parseFloat(req.query.lon);
+
+    } else {
+      // 2️⃣ Single, robust IP-based lookup
+      const rawIp = (req.headers['x-forwarded-for'] || req.socket.remoteAddress)
+          .split(',')[0].trim();
+      let geo;
+
+      // 2a) Try geolocating that specific IP
+      try {
+        const resp1 = await fetch(`https://ipapi.co/${rawIp}/json/`);
+        geo = await resp1.json();
+        if (geo.error) throw new Error(geo.reason);
+      } catch {
+        // 2b) Fallback to “whoever made the request”
+        const resp2 = await fetch('https://ipapi.co/json/');
+        geo = await resp2.json();
+      }
+
+      lat = parseFloat(geo.latitude)  || 0;
+      lon = parseFloat(geo.longitude) || 0;
+    }
+
+    // 3️⃣ POI lookup (Overpass)
+    const overpassQuery = `
+      [out:json][timeout:10];
+      node["shop"~"supermarket|grocery"](around:1000,${lat},${lon});
+      out center;
+    `;
+    const poiUrl  = 'https://overpass-api.de/api/interpreter?data='
+        + encodeURIComponent(overpassQuery);
+    const poiResp = await fetch(poiUrl);
+    const poiData = await poiResp.json();
+
+    // 4️⃣ Normalize store data
+    const stores = poiData.elements.map(el => ({
+      name: el.tags?.name || 'Unnamed store',
+      lat:  el.type === 'node' ? el.lat       : el.center.lat,
+      lon:  el.type === 'node' ? el.lon       : el.center.lon
+    }));
+
+    // 5️⃣ Render with exactly one lat/lon and stores
+    res.render('stores', { lat, lon, stores });
+
+  } catch (err) {
+    next(err);
+  }
+});
+
+
 
 /* END Route Section */
 
