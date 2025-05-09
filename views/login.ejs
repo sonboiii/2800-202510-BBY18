@@ -1,5 +1,46 @@
 <%- include('templates/header', { title: 'Login' }) %>
 
-<h1 class="text-center">Sign in with Email</h1>
+<h1 class="text-center mb-4">Sign In</h1>
+
+<div id="login-form" class="mx-auto" style="max-width: 400px;">
+  <div class="mb-3">
+    <label>Email</label>
+    <input type="email" id="email" class="form-control" required>
+  </div>
+  <div class="mb-3">
+    <label>Password</label>
+    <input type="password" id="password" class="form-control" required>
+  </div>
+  <button id="login-btn" class="btn btn-primary w-100">Login</button>
+
+  <div id="login-message" class="alert alert-danger mt-3 text-center d-none"></div>
+</div>
+
+<p class="text-center mt-3">
+    Don't have an account? <a href="/signup">Sign up here</a>
+  </p>
+<script>
+document.getElementById('login-btn').addEventListener('click', async (e) => {
+  e.preventDefault();
+
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value.trim();
+  const msgBox = document.getElementById('login-message');
+
+  const res = await fetch('/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+
+  if (res.redirected) {
+    window.location.href = res.url; // successful login
+  } else {
+    const text = await res.text();
+    msgBox.textContent = text;
+    msgBox.classList.remove('d-none');
+  }
+});
+</script>
 
 <%- include('templates/footer') %>

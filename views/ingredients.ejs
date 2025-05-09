@@ -1,0 +1,34 @@
+<%- include('templates/header', { title }) %>
+
+<div class="container py-5">
+    <h1 class="mb-4"><%= title %></h1>
+
+    <form method="POST" action="/ingredients">
+        <div class="mb-3">
+            <label for="ingredients" class="form-label">
+                Enter ingredients (comma-separated):
+            </label>
+            <input
+                    type="text"
+                    id="ingredients"
+                    name="ingredients"
+                    class="form-control"
+                    placeholder="e.g. broccoli, cheese, pasta"
+                    value="<%= ingredientsInput %>"
+                    required
+            />
+        </div>
+        <button type="submit" class="btn btn-primary">Get Recipes</button>
+    </form>
+
+    <% if (recipes.length) { %>
+        <h2 class="mt-5">Recipes</h2>
+        <ul class="list-group mt-3">
+            <% recipes.forEach(recipe => { %>
+                <li class="list-group-item"><%= recipe %></li>
+            <% }) %>
+        </ul>
+    <% } %>
+</div>
+
+<%- include('templates/footer') %>
