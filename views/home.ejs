@@ -1,0 +1,29 @@
+<%- include('templates/header', { title: 'Dashboard' }) %>
+
+<div class="text-center">
+    <h2 id="greeting" class="mb-5 fw-bold" data-username="<%= user?.name || '' %>!"></h2>
+    <h3 id="location" class="text-center fs-8 fw-bold text-muted"></h3>
+    <h3 id="current-time" class="text-center fs-8 fw-bold text-secondary"></h3>
+    <h3 id="meal-time-msg" class="text-center  fs-8 fw-bold text-muted"></h3>
+    <button id="store-btn" class="btn btn-primary mt-3">Closest Store</button>
+    <button id="ingredient-btn" class="btn btn-primary mt-3">Ingredients</button>
+    <a href="/logout" class="btn btn-outline-danger mt-3">Logout</a>
+</div>
+
+<%- include('templates/footer', {
+jsFiles: ['/js/location.js', '/js/greeting_time.js']
+}) %>
+
+<script>
+  document.getElementById('store-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = '/stores';
+  });
+
+  document.getElementById('ingredient-btn').addEventListener('click', function(e) {
+      e.preventDefault();
+      window.location.href = '/ingredients';
+  });
+</script>
+
+

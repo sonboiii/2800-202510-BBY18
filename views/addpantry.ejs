@@ -1,0 +1,51 @@
+<%- include('templates/header', { title: 'Add Pantry Item' }) %>
+
+    <div class="container">
+        <h1>Add Pantry Item</h1>
+        <form action="/pantry/add" method="POST" class="mt-4">
+            <div class="mb-3">
+                <label for="name" class="form-label">Ingredient</label>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Ingredient Name" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="quantity" class="form-label">Quantity</label>
+                <input type="number" name="quantity" id="quantity" class="form-control" placeholder="Quantity" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="unit" class="form-label">Unit</label>
+                <select name="unit" id="unit" class="form-select">
+                    <option value="pcs">pcs</option>
+                    <option value="g">g</option>
+                    <option value="ml">ml</option>
+                </select>
+            </div>
+
+
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select name="category" id="category" class="form-select">
+                    <option value="">-- Select a Category --</option>
+                    <option value="Vegetables">Vegetables</option>
+                    <option value="Fruits">Fruits</option>
+                    <option value="Dairy">Dairy</option>
+                    <option value="Meat">Meat</option>
+                    <option value="Seafood">Seafood</option>
+                    <option value="Grains">Grains</option>
+                    <option value="Spices">Spices</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="expirationDate" class="form-label">Expiration Date</label>
+                <input type="date" name="expirationDate" id="expirationDate" class="form-control">
+            </div>
+
+            <button type="submit" class="btn btn-primary">Add Item</button>
+            <a href="/pantry" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+
+    <%- include('templates/footer') %>
