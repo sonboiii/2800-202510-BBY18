@@ -5,9 +5,8 @@ const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const MongoStore = require('connect-mongo');
-const auth = require('./src/auth');
 const fetch   = require('node-fetch');      // v2.x
-
+const { connectDB, uri: mongoUri } = require('./db');
 
 const app = express();
 const PORT = 3000;
@@ -18,9 +17,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.set('trust proxy', true);
 
-
-const mongoUri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}` +
-  `@${process.env.MONGODB_HOST}/${process.env.MONGODB_DATABASE}?retryWrites=true&w=majority`;
+function requireLogin(req, res, next) {
+  if (!req.session.user) {
+    return res.redirect('/login');
+  }
+  next();
+}
 
 app.use(session({
   secret: process.env.NODE_SESSION_SECRET,
@@ -35,18 +37,14 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user || undefined;
   next();
 });
+
+// Connect DB
+connectDB().then(db => {
+  const auth = require('./src/auth')(db);
+  const pantryRouter = require('./routes/pantry')(db);  
+
 app.use(auth.router);
-
-function requireLogin(req, res, next) {
-  if (!req.session.user) {
-    return res.redirect('/login');
-  }
-  next();
-}
-
-app.get('/home', requireLogin, (req, res) => {
-  res.render('home', { title: 'Home', user: req.session.user });
-});
+app.use('/pantry', pantryRouter);
 
 
 /* Routes Section */
@@ -62,6 +60,10 @@ app.get('/about', (req, res) => {
   res.render('about', { title: 'About' });
 });
 
+app.get('/home', requireLogin, (req, res) => {
+  res.render('home', { user: req.session.user });
+});
+
 app.get('/signup', (req, res) => {
   res.render('signup', { title: 'Sign Up' });
 });
@@ -75,10 +77,6 @@ app.get('/logout', (req, res) => {
     res.clearCookie('connect.sid');
     res.redirect('/');
   });
-});
-
-app.get('/home', auth.requireLogin, (req, res) => {
-  res.render('home', { title: 'Home', user: req.session.user });
 });
 
 
@@ -166,8 +164,6 @@ app.get('/weather', async (req, res) => {
   }
 });
 
-
-
 /* END Route Section */
 
 
@@ -176,6 +172,7 @@ app.use(function (req, res) {
   res.render('404', { title: 'Page Not Found' });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server is running at http://localhost:${PORT}`);
+app.listen(PORT, () => console.log(`Server is running at http://localhost:${PORT}`));
+}).catch(err => {
+  console.error('Failed to start server:', err);
 });
