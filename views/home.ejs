@@ -2,8 +2,10 @@
 
 <div class="text-center">
   <h1 class="mb-3">Goodmorning, <%= user.name %>!</h1>
-  <p class="lead">This is your personalized homepage.</p>
+  <h4 id="location"></h4>
   <a href="/logout" class="btn btn-outline-danger mt-3">Logout</a>
 </div>
 
-<%- include('templates/footer') %>
+<%- include('templates/footer', {
+  jsFiles: ['/js/location.js']
+}) %>
