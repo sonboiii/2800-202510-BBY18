@@ -137,6 +137,35 @@ app.get('/stores', async (req, res, next) => {
   }
 });
 
+app.get('/weather', async (req, res) => {
+  const locationQuery = req.query.location;
+
+  if (!locationQuery) {
+    return res.status(400).json({ error: 'Missing location parameter' });
+  }
+
+  try {
+    const weatherUrl = `https://api.weatherapi.com/v1/current.json?key=${process.env.WEATHER_API_KEY}&q=${encodeURIComponent(locationQuery)}&aqi=no`;
+    const weatherResp = await fetch(weatherUrl);
+    const weatherData = await weatherResp.json();
+
+    if (weatherData.error) {
+      return res.status(500).json({ error: weatherData.error.message });
+    }
+
+    res.json({
+      city: weatherData.location.name,
+      region: weatherData.location.region,
+      temp_c: weatherData.current.temp_c,
+      condition: weatherData.current.condition.text,
+      icon: weatherData.current.condition.icon
+    });
+  } catch (error) {
+    console.error('Weather API request failed:', error);
+    res.status(500).json({ error: 'Weather API request failed' });
+  }
+});
+
 
 
 /* END Route Section */
