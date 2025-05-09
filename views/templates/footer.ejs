@@ -1,8 +1,17 @@
+<footer class="navbar fixed-bottom navbar-dark bg-dark">
+  <div class="container d-flex justify-content-around py-2">
+    <a class="nav-link text-light" href="/pantry">Pantry</a>
+    <a class="nav-link text-light" href="/recipes">Recipes</a>
+    <a class="nav-link text-light" href="/stores">Store Locator</a>
+  </div>
+</footer>
+
 <% if (typeof jsFiles !== 'undefined' && jsFiles.length > 0) { %>
-    <% jsFiles.forEach(file => { %>
-        <script src="<%= file %>"></script>
-    <% }) %>
+  <% jsFiles.forEach(file => { %>
+    <script src="<%= file %>"></script>
+  <% }) %>
 <% } %>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
