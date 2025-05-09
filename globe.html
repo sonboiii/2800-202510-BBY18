@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Globe.gl Interactive Globe Spinner</title>
+    <!-- Import globe.gl library from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://unpkg.com/globe.gl@2.28.3/dist/globe.gl.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #121212;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 800px;
+            width: 100%;
+            z-index: 10;
+        }
+        
+        h1 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 2.5rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+        }
+        
+        .globe-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        
+        #globeViz {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .controls {
+            position: relative;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            background-color: rgba(76, 175, 80, 0.8);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+            backdrop-filter: blur(5px);
+        }
+        
+        .btn:hover {
+            background-color: rgba(69, 160, 73, 0.9);
+            transform: scale(1.05);
+        }
+        
+        .btn:disabled {
+            background-color: rgba(204, 204, 204, 0.5);
+            cursor: not-allowed;
+            transform: scale(1);
+        }
+        
+        .result {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: rgba(25, 25, 25, 0.8);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: opacity 0.5s, transform 0.5s;
+            transform: translateY(20px);
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+            width: 100%;
+            position: relative;
+            z-index: 100;
+        }
+        
+        .result.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        #regionName {
+            color: #4CAF50;
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        #regionInfo {
+            color: #ddd;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .result {
+                margin-top: 20px;
+                padding: 15px;
+            }
+            
+            #regionName {
+                font-size: 20px;
+            }
+            
+            #regionInfo {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Spin the Globe!</h1>
+        
+        <div class="controls">
+            <button class="btn" id="spinBtn">Spin the Globe</button>
+            <div class="result" id="result">
+                <h2>You landed on:</h2>
+                <div id="regionName">Spin to find out!</div>
+                <div id="regionInfo"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="globe-container">
+        <div id="globeViz"></div>
+    </div>
+
+    <script>
+        // Define world regions with info and coordinates (lat, lng)
+        const regions = [
+            {
+                name: "North America",
+                info: "Home to the United States, Canada, Mexico, and numerous Caribbean nations. Known for diverse landscapes from Arctic tundra to tropical beaches.",
+                lat: 40,
+                lng: -100
+            },
+            {
+                name: "South America",
+                info: "Contains the Amazon Rainforest, Andes Mountains, and vibrant cultures. Known for its biodiversity and rich indigenous history.",
+                lat: -15,
+                lng: -60
+            },
+            {
+                name: "Europe",
+                info: "Cradle of Western civilization with rich history, art, and architecture. Home to diverse cultures across many countries.",
+                lat: 50,
+                lng: 10
+            },
+            {
+                name: "Africa",
+                info: "The second-largest continent with rich biodiversity, numerous cultures, and ancient civilizations. Home to the Sahara Desert and Nile River.",
+                lat: 0,
+                lng: 20
+            },
+            {
+                name: "Asia",
+                info: "The largest continent, containing diverse cultures, landscapes, and the most populous countries. Home to the Himalayas and ancient civilizations.",
+                lat: 35,
+                lng: 100
+            },
+            {
+                name: "Oceania",
+                info: "Includes Australia, New Zealand, and numerous Pacific islands. Known for unique wildlife, beautiful beaches, and indigenous cultures.",
+                lat: -25,
+                lng: 135
+            },
+            {
+                name: "Antarctica",
+                info: "The southernmost continent covered in ice. Home to scientific research stations and diverse marine wildlife.",
+                lat: -80,
+                lng: 0
+            },
+            {
+                name: "Middle East",
+                info: "Region at the crossroads of Europe, Asia, and Africa. Known for its ancient history, diverse cultures, and significant religious sites.",
+                lat: 30,
+                lng: 40
+            },
+            {
+                name: "Caribbean",
+                info: "Tropical island region known for beautiful beaches, vibrant music, diverse cultures, and rich colonial history.",
+                lat: 20,
+                lng: -75
+            },
+            {
+                name: "Central America",
+                info: "The narrow isthmus connecting North and South America. Known for tropical forests, ancient Mayan ruins, and biodiversity.",
+                lat: 15,
+                lng: -90
+            },
+            {
+                name: "Scandinavia",
+                info: "Northern European region known for progressive policies, Northern Lights, fjords, and Viking heritage.",
+                lat: 63,
+                lng: 15
+            },
+            {
+                name: "Mediterranean",
+                info: "Region surrounding the Mediterranean Sea. Known for healthy cuisine, ancient ruins, and beautiful coastal areas.",
+                lat: 40,
+                lng: 18
+            },
+        ];
+
+        // DOM elements
+        const spinBtn = document.getElementById('spinBtn');
+        const result = document.getElementById('result');
+        const regionName = document.getElementById('regionName');
+        const regionInfo = document.getElementById('regionInfo');
+
+        // Variables for spinning
+        let isSpinning = false;
+        let globe;
+        let spinDuration;
+        let startTime;
+        let animationFrame;
+        let selectedRegion = null;
+        
+        // Cancel animation frame if it exists when page is unloaded
+        window.addEventListener('beforeunload', () => {
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+            }
+        });
+
+        // Initialize globe
+        initGlobe();
+
+        function initGlobe() {
+            // Initialize globe
+            globe = window.Globe()
+                .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+                .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+                .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
+                .width(window.innerWidth)
+                .height(window.innerHeight)
+                .backgroundColor('rgba(0,0,0,0)')
+                .atmosphereColor('rgba(65,169,176,0.7)')
+                .atmosphereAltitude(0.25)
+                .pointOfView({ lat: 0, lng: 0, altitude: 2.5 }) // Set a fixed initial altitude (zoom level)
+                (document.getElementById('globeViz'));
+
+            // Add points for each region
+            globe.pointsData(regions)
+                .pointColor(() => '#4CAF50')
+                .pointAltitude(0.01)
+                .pointRadius(0.5)
+                .pointsMerge(true);
+
+            /*
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                globe.width(window.innerWidth).height(window.innerHeight);
+            });*/
+
+            window.addEventListener('resize', () => {
+            // Update the globe size based on the window size
+            globe.width(window.innerWidth).height(window.innerHeight);
+
+            // Get the smaller of width or height
+            const minDimension = Math.min(window.innerWidth, window.innerHeight);
+            
+            // Define zoom limits
+            const minAltitude = 1.5;  // Minimum altitude (zoom-in limit)
+            const maxAltitude = 5.5;  // Maximum altitude (zoom-out limit)
+                
+            // Map smaller dimensions to higher altitude (zoom out more as window gets smaller)
+            const responsiveAltitude = Math.min(
+            maxAltitude,
+            Math.max(minAltitude, 2200 / minDimension) // You can tweak 1500 as a base scale
+            );
+
+            // Update the globe's point of view with smooth transition
+            const currentView = globe.pointOfView(); // Get the current view (lat, lng, altitude)
+            globe.pointOfView({ ...currentView, altitude: responsiveAltitude }, 1000); // Smooth transition for altitude change
+            });
+            /*
+            // Add initial animation
+            setTimeout(() => {
+                // Don't animate on initial load, just set the position
+                globe.pointOfView({ lat: 30, lng: 0, altitude: 2.5 });
+            }, 200);*/
+        }
+
+        // Add event listener for spin button
+        spinBtn.addEventListener('click', spinGlobe);
+
+        function spinGlobe() {
+            if (isSpinning) return;
+            
+            // Reset and hide result
+            result.classList.remove('show');
+            
+            // Initialize spinning
+            isSpinning = true;
+            spinBtn.disabled = true;
+            
+            // Reset any previous highlighted points
+            globe.pointsData(regions)
+                .pointColor(() => '#4CAF50')
+                .pointAltitude(0.01)
+                .pointRadius(0.5);
+            
+            // Random spin duration between 4 and 7 seconds
+            spinDuration = Math.random() * 3000 + 4000;
+            startTime = Date.now();
+            
+            // Start spinning animation with continuous motion
+            startRandomSpinning();
+        }
+
+        function startRandomSpinning() {
+            // Choose random region for final destination
+            selectedRegion = regions[Math.floor(Math.random() * regions.length)];
+            
+            // Set initial velocity
+            let velocity = {
+                lat: (Math.random() - 0.5) * 2, // Random latitude velocity
+                lng: (Math.random() * 5) + 3    // Random longitude velocity (always positive for consistent direction)
+            };
+            
+            // Get starting position
+            const startPosition = globe.pointOfView();
+            let currentPosition = {
+                lat: startPosition.lat,
+                lng: startPosition.lng
+            };
+            
+            const totalDuration = spinDuration;
+            const startSpinTime = Date.now();
+            let lastFrameTime = startSpinTime;
+            
+            // Start smooth animation
+            function animateSpin() {
+                const now = Date.now();
+                const elapsed = now - startSpinTime;
+                const deltaTime = (now - lastFrameTime) / 1000; // Convert to seconds
+                lastFrameTime = now;
+                
+                // Calculate progress (0 to 1)
+                const progress = Math.min(elapsed / totalDuration, 1);
+                
+                if (progress < 0.8) {
+                    // Main spinning phase - maintain or slightly reduce speed
+                    // Apply velocity to position
+                    currentPosition.lat += velocity.lat * deltaTime * 60; // Scale by 60 for frame-rate independence
+                    currentPosition.lng += velocity.lng * deltaTime * 60;
+                    
+                    // Keep latitude within bounds
+                    currentPosition.lat = Math.max(-80, Math.min(80, currentPosition.lat));
+                    
+                    // Keep longitude within -180 to 180
+                    currentPosition.lng = (currentPosition.lng + 180) % 360 - 180;
+                    
+                    // Update globe position
+                    globe.pointOfView({
+                        lat: currentPosition.lat,
+                        lng: currentPosition.lng,
+                        altitude: startPosition.altitude
+                    });
+                    
+                    // Request next frame
+                    animationFrame = requestAnimationFrame(animateSpin);
+                } else if (progress < 1) {
+                    // Final phase - transition to the selected region
+                    const transitionProgress = (progress - 0.8) / 0.2; // Rescale 0.8-1.0 to 0-1
+                    const eased = easeOutCubic(transitionProgress);
+                    
+                    const targetLat = selectedRegion.lat;
+                    const targetLng = selectedRegion.lng;
+                    
+                    // Calculate shortest path for longitude (across the -180/180 boundary if needed)
+                    let lngDiff = targetLng - currentPosition.lng;
+                    if (Math.abs(lngDiff) > 180) {
+                        lngDiff = lngDiff > 0 ? lngDiff - 360 : lngDiff + 360;
+                    }
+                    
+                    // Smoothly interpolate to target
+                    const newLat = currentPosition.lat + (targetLat - currentPosition.lat) * eased;
+                    const newLng = currentPosition.lng + lngDiff * eased;
+                    
+                    // Update globe position
+                    globe.pointOfView({
+                        lat: newLat,
+                        lng: newLng,
+                        altitude: startPosition.altitude
+                    });
+                    
+                    // Request next frame
+                    animationFrame = requestAnimationFrame(animateSpin);
+                } else {
+                    // Spinning complete
+                    finishSpin();
+                }
+            }
+            
+            // Start the animation
+            animationFrame = requestAnimationFrame(animateSpin);
+        }
+
+        function easeOutCubic(x) {
+            return 1 - Math.pow(1 - x, 3);
+        }
+
+        function finishSpin() {
+            isSpinning = false;
+            spinBtn.disabled = false;
+            
+            // Add highlight point at the selected region
+            globe.pointsData([...regions, {
+                ...selectedRegion,
+                highlighted: true
+            }])
+            .pointColor(point => point.highlighted ? '#ff6b6b' : '#4CAF50')
+            .pointAltitude(point => point.highlighted ? 0.1 : 0.01)
+            .pointRadius(point => point.highlighted ? 1.5 : 0.5);
+            
+            // Display result
+            regionName.textContent = selectedRegion.name;
+            regionInfo.textContent = selectedRegion.info;
+            result.classList.add('show');
+            
+            // Zoom out slightly to show the highlighted point better
+            globe.pointOfView({
+                ...globe.pointOfView(),
+                altitude: 2.5
+            });
+        }
+    </script>
+</body>
+</html>
