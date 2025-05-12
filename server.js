@@ -29,7 +29,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: mongoUri
+    mongoUrl: mongoUri,
+    crypto: {
+      secret: process.env.MONGODB_SESSION_SECRET
+    }
   })
 }));
 
@@ -81,6 +84,21 @@ app.get('/logout', (req, res) => {
     res.redirect('/');
   });
 });
+
+app.use(session({
+  secret: process.env.NODE_SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: mongoUri,
+    crypto: {
+      secret: process.env.MONGODB_SESSION_SECRET
+    }
+  }),
+  cookie: {
+    maxAge: (60 * 60 * 1000) * 2,
+  }
+}));
 
 
   app.get('/stores', async (req, res, next) => {
