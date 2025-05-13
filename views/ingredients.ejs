@@ -1,5 +1,5 @@
-<!-- views/ingredients.ejs -->
 <%- include('templates/header', { title }) %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container py-5">
     <h1 class="mb-4"><%= title %></h1>
@@ -54,14 +54,10 @@
                             <h5 class="card-title"><%= meal.name %></h5>
                             <p class="card-text"><strong>Category:</strong> <%= meal.category %></p>
                             <p class="card-text"><strong>Area:</strong> <%= meal.area %></p>
-                            <button
-                                    class="btn btn-sm btn-outline-secondary mt-auto"
-                                    type="button"
-                                    data-bs-toggle="collapse"
-                                    data-bs-target="#instr-<%= meal._id %>"
-                            >
-                                Show Instructions
-                            </button>
+                            <a href="/ingredients/meal/<%= meal._id %>"
+                               class="btn btn-sm btn-outline-primary rounded-pill shadow-sm mt-auto px-4">
+                                Read More
+                            </a>
                             <div class="collapse mt-2" id="instr-<%= meal._id %>">
                                 <p><%= meal.instructions %></p>
                             </div>
@@ -108,9 +104,7 @@
         }
 
         function updateHiddenInputs() {
-            // clear old inputs
             form.querySelectorAll('input[name="ingredients[]"]').forEach(el => el.remove());
-            // add a hidden input per selected id
             selected.forEach((_, id) => {
                 const inp = document.createElement('input');
                 inp.type = 'hidden';
@@ -131,8 +125,20 @@
             debounce = setTimeout(async () => {
                 const res = await fetch(`/ingredients/search?q=${encodeURIComponent(q)}`);
                 const list = await res.json();
+
+                // filter duplicates by lowercase name, prefer capitalized
+                const groups = list.reduce((acc, item) => {
+                    const lower = item.name.toLowerCase();
+                    acc[lower] = acc[lower] || [];
+                    acc[lower].push(item);
+                    return acc;
+                }, {});
+                const filtered = Object.values(groups).map(group => {
+                    return group.find(item => item.name[0] === item.name[0].toUpperCase()) || group[0];
+                });
+
                 suggestions.innerHTML = '';
-                list.forEach(item => {
+                filtered.forEach(item => {
                     if (selected.has(item._id)) return;
                     const li = document.createElement('li');
                     li.className = 'list-group-item list-group-item-action';
@@ -150,7 +156,19 @@
             }, 300);
         });
 
-        // remove any pre‐rendered items’ buttons
+        // hook into form submission to ensure at least one ingredient
+        form.addEventListener('submit', e => {
+            if (selected.size === 0) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No ingredients selected',
+                    text: 'Please input at least 1 ingredient before searching.'
+                });
+            }
+        });
+
+        // remove any pre-rendered items’ buttons
         selectedList.querySelectorAll('.remove-btn').forEach(btn =>
             btn.addEventListener('click', e => {
                 const li = e.target.closest('li');
@@ -161,6 +179,15 @@
         );
 
         renderSelected();
+
+        // show alert if no meals found for selected ingredients
+        <% if (!meals.length && selectedIngredients.length) { %>
+        Swal.fire({
+            icon: 'info',
+            title: 'No meals found',
+            text: 'No recipes were found for the selected ingredients. Please adjust your selection.'
+        });
+        <% } %>
     });
 </script>
 

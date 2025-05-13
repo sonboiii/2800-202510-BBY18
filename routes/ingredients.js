@@ -1,4 +1,3 @@
-// routes/ingredients.js
 const express = require('express');
 
 module.exports = function(db) {
@@ -9,12 +8,12 @@ module.exports = function(db) {
         if (!req.session.user) return res.redirect('/login');
         res.render('ingredients', {
             title: 'Find Recipes by Ingredients',
-            selectedIngredients: [],    // no ingredients selected yet
-            meals: []                   // no meals yet
+            selectedIngredients: [],
+            meals: []
         });
     });
 
-    // AJAX endpoint: fuzzy‐search ingredients by name
+    // AJAX endpoint: fuzzy-search ingredients by name
     router.get('/search', async (req, res, next) => {
         if (!req.session.user) return res.status(401).json([]);
         try {
@@ -34,7 +33,6 @@ module.exports = function(db) {
     router.post('/meals', async (req, res, next) => {
         if (!req.session.user) return res.redirect('/login');
         try {
-            // req.body.ingredients might be a single string or an array
             let ingredientIds = req.body['ingredients[]'] || req.body.ingredients || [];
             if (!Array.isArray(ingredientIds)) ingredientIds = [ingredientIds];
 
@@ -61,8 +59,24 @@ module.exports = function(db) {
 
             res.render('ingredients', {
                 title: 'Find Recipes by Ingredients',
-                selectedIngredients: selectedDocs,  // pass back for re-render
+                selectedIngredients: selectedDocs,
                 meals
+            });
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // Meal detail page (Read More)
+    router.get('/meal/:id', async (req, res, next) => {
+        if (!req.session.user) return res.redirect('/login');
+        try {
+            const mealId = req.params.id;
+            const meal = await db.collection('meals').findOne({ _id: mealId });
+            if (!meal) return res.status(404).send('Meal not found');
+            res.render('meal', {
+                title: meal.name,
+                meal
             });
         } catch (err) {
             next(err);
