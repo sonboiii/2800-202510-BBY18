@@ -23,7 +23,7 @@ module.exports = function (db) {
     if (!req.session.user) {
       return res.redirect('/login');
     }
-    res.render('addPantry'); 
+    res.render('addPantry');
   });
 
   // Adds item to pantry
@@ -47,33 +47,33 @@ module.exports = function (db) {
 
   // Updates item
   router.post('/update/:id', async (req, res) => {
-  if (!req.session.user) return res.redirect('/login');
+    if (!req.session.user) return res.redirect('/login');
 
-  try {
-    const itemId = req.params.id;
-    const userId = req.session.user._id;
-    const updatedData = {
-      name: req.body.name,
-      quantity: req.body.quantity,
-      unit: req.body.unit,
-      category: req.body.category,
-      expirationDate: req.body.expirationDate
-    };
+    try {
+      const itemId = req.params.id;
+      const userId = req.session.user._id;
+      const updatedData = {
+        name: req.body.name,
+        quantity: req.body.quantity,
+        unit: req.body.unit,
+        category: req.body.category,
+        expirationDate: req.body.expirationDate
+      };
 
-    const result = await db.collection('pantryItems').updateOne(
-      { _id: new ObjectId(itemId), userId },
-      { $set: updatedData }
-    );
+      const result = await db.collection('pantryItems').updateOne(
+        { _id: new ObjectId(itemId), userId },
+        { $set: updatedData }
+      );
 
-    if (result.matchedCount === 0) {
-      return res.status(404).send('Item not found or unauthorized.');
+      if (result.matchedCount === 0) {
+        return res.status(404).send('Item not found or unauthorized.');
+      }
+
+      res.status(200).send('Update successful');
+    } catch (err) {
+      res.status(500).send('Failed to update item.');
     }
-
-    res.status(200).send('Update successful');
-  } catch (err) {
-    res.status(500).send('Failed to update item.');
-  }
-});
+  });
 
   // Delete items from pantry
   router.post('/delete/:id', async (req, res) => {
@@ -97,6 +97,20 @@ module.exports = function (db) {
       res.redirect('/pantry');
     } catch (err) {
       res.status(500).send('Failed to delete item.');
+    }
+  });
+
+  router.post('/clear', async (req, res, next) => {
+    if (!req.session.user) return res.status(401).json({ error: 'Unauthorized' });
+
+    try {
+      const userId = (req.session.user._id);
+
+      const result = await db.collection('pantryItems').deleteMany({ userId });
+      res.json({ message: 'Pantry cleared' });
+    } catch (err) {
+      console.error("Error clearing pantry:", err);
+      next(err);
     }
   });
 

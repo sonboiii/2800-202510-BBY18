@@ -95,3 +95,21 @@ document.getElementById('editForm').addEventListener('submit', async function (e
     alert('Failed to update item');
   }
 });
+
+async function confirmClearPantry() {
+  const confirmed = confirm("Are you sure you want to clear your entire pantry?");
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch('/pantry/clear', { method: 'POST' });
+    if (res.ok) {
+      alert('Pantry cleared!');
+      location.reload();
+    } else {
+      alert('Something went wrong while clearing your pantry.');
+    }
+  } catch (err) {
+    console.error("Error clearing pantry:", err);
+    alert("Something went wrong while clearing your pantry.");
+  }
+}
