@@ -1,0 +1,62 @@
+<%- include('templates/header', { title: meal.name }) %>
+
+<style>
+    body {
+        font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        line-height: 1.5;
+    }
+</style>
+
+<div class="container py-5">
+    <h1 class="mb-4 text-center"><%= meal.name %></h1>
+
+    <!-- Image & Ingredients Side by Side -->
+    <div class="row mb-5">
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <img src="<%= meal.thumbnail %>" class="card-img-top" alt="<%= meal.name %>">
+                <div class="card-body">
+                    <p class="mb-2"><strong>Category:</strong> <span class="badge bg-secondary"><%= meal.category %></span></p>
+                    <p><strong>Area:</strong> <span class="badge bg-info text-dark"><%= meal.area %></span></p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Ingredients</h5>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <% meal.ingredients.forEach(ing => { %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><%= ing.name %></span>
+                            <span class="text-muted"><%= ing.measure %></span>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Single Instructions Card -->
+    <% const sentences = meal.instructions.split(/(?<=[.!?])\s+/).filter(s => s.trim()); %>
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Instructions</h5>
+        </div>
+        <ul class="list-group list-group-flush">
+            <% sentences.forEach((sentence, idx) => { %>
+                <li class="list-group-item"><strong>Step <%= idx + 1 %>:</strong> <%= sentence.trim() %></li>
+            <% }) %>
+        </ul>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-4 text-center">
+        <a href="/ingredients" class="btn btn-outline-primary rounded-pill px-4 py-2">
+            ← Back to Search
+        </a>
+    </div>
+</div>
+
+<%- include('templates/footer') %>
