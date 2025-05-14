@@ -11,6 +11,7 @@
     "natural": "^8.0.1",
     "node-fetch": "2",
     "nodemon": "^3.1.10",
+    "openai": "^4.98.0",
     "three": "^0.176.0"
   }
 }
