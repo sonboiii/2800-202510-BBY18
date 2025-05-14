@@ -44,12 +44,12 @@ connectDB().then(db => {
   const auth = require('./src/auth')(db);
   const pantryRouter = require('./routes/pantry')(db);
   const ingredientsRouter = require('./routes/ingredients')(db);
-
-
+  const availableRecipesRoutes = require('./routes/availableRecipes')(db);
 
 app.use(auth.router);
 app.use('/pantry', pantryRouter);
 app.use('/ingredients', ingredientsRouter);
+app.use('/available-recipes', availableRecipesRoutes);
 
 /* Routes Section */
 app.get('/', (req, res) => {
