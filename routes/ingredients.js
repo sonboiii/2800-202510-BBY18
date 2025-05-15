@@ -84,19 +84,22 @@ module.exports = function(db) {
 
             const dishPrompt = `
 You are a friendly kitchen assistant.
-Have more details and be more coherent
-Write an appetizing description for this recipe:
+Have more details and be as coherent as possible.
+Write an appetizing description for following recipe:
 Name: ${meal.name}
 Category: ${meal.category}
 Area: ${meal.area}
 Ingredients:
 ${meal.ingredients.map(i => `- ${i.name}: ${i.measure}`).join('\n')}
-      `.trim();
+      Use your own word. Remember to use .md format to add visual aid.`.trim();
+
+
 
             const stepsPrompt = `
 You are a cooking guide.
 Lookup the instruction and then
 Summarize these cooking instructions:
+Remember to use .md format to add visual aid.
 ${meal.instructions}
       `.trim();
 
@@ -108,7 +111,7 @@ ${meal.instructions}
                         { role: "user",   content: dishPrompt }
                     ],
                     temperature: 0.7,
-                    max_tokens:  1000
+                    max_tokens:  5000
                 }),
                 openai.chat.completions.create({
                     model:       "qwen/qwen3-8b:free",
@@ -117,7 +120,7 @@ ${meal.instructions}
                         { role: "user",   content: stepsPrompt }
                     ],
                     temperature: 0.7,
-                    max_tokens:  2000
+                    max_tokens:  500
                 })
             ]);
 
