@@ -1,0 +1,30 @@
+<%- include('templates/header', { 
+    title: 'Spin the globe',
+    cssFiles: ['/css/globe.css'],
+    jsFiles: ['https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js', 'https://unpkg.com/globe.gl@2.28.3/dist/globe.gl.min.js']
+}) %>
+
+<div class="container">
+    <h2>Your Next Recipe Is Just a Spin Away!</h2>
+    
+    <div class="controls">
+        <button class="btn" id="spinBtn">Spin the Globe</button>
+        <div class="result" id="result">
+            <h2>You landed on:</h2>
+            <div id="regionName"></div>
+            <div id="regionInfo"></div>
+            
+            <button id="viewRecipeBtn" class="btn mt-3">
+            View Recipes
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="globe-container">
+    <div id="globeViz"></div>
+</div>
+
+<%- include('templates/footer', {
+    jsFiles: ['/js/globe.js']
+}) %>
