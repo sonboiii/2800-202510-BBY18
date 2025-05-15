@@ -19,7 +19,7 @@
             <a href="/available-recipes/recipe/<%= meal._id %>" class="btn btn-outline-primary mt-auto">
               Full Instructions
             </a>
-            <form action="/favourites/remove/<%= meal._id %>" method="POST" class="mt-2">
+            <form action="/favourites/remove/<%= meal._id %>" method="POST" class="mt-2" onsubmit="return confirm('Are you sure you want to remove this recipe from your favourites?');">
                 <button class="btn btn-outline-secondary btn-sm w-100">Remove from Favourites</button>
             </form>
 
