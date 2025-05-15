@@ -43,12 +43,12 @@ connectDB().then(db => {
   const auth = require('./src/auth')(db);
   const pantryRouter = require('./routes/pantry')(db);
   const ingredientsRouter = require('./routes/ingredients')(db);
-
-
+  const mealsRouter = require('./routes/meals')(db);
 
 app.use(auth.router);
 app.use('/pantry', pantryRouter);
 app.use('/ingredients', ingredientsRouter);
+app.use('/meals', mealsRouter);
 
 /* Routes Section */
 app.get('/', (req, res) => {
@@ -154,7 +154,9 @@ app.get('/weather', async (req, res) => {
   }
 });
 
-
+app.get('/globe', (req, res) => {
+  res.render('globe');
+});
 
 
 

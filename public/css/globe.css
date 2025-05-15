@@ -1,0 +1,128 @@
+body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+nav, footer, h2 {
+    width: 100%;
+    position: relative;
+    z-index: 10;
+}
+
+.container {
+    text-align: center;
+}
+
+h2 {
+    color: #fff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.globe-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+#globeViz {
+    width: 100%;
+    height: 100%;
+}
+
+.controls {
+    position: relative;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.btn {
+    background-color: rgba(76, 175, 80, 0.8);
+    color: white;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s, transform 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: bold;
+    backdrop-filter: blur(5px);
+}
+
+.btn:hover {
+    background-color: rgba(69, 160, 73, 0.9);
+    transform: scale(1.05);
+}
+
+.btn:disabled {
+    background-color: rgba(204, 204, 204, 0.5);
+    cursor: not-allowed;
+    transform: scale(1);
+}
+
+.result {
+    color:yellow;
+    margin-top: 30px;
+    padding: 20px;
+    background-color: rgba(25, 25, 25, 0.8);
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    transition: opacity 0.5s, transform 0.5s;
+    transform: translateY(20px);
+    backdrop-filter: blur(10px);
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    z-index: 100;
+}
+
+.result.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+#regionName {
+    color: #4CAF50;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+#regionInfo {
+    color: #ddd;
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+    
+    .result {
+        margin-top: 20px;
+        padding: 15px;
+    }
+    
+    #regionName {
+        font-size: 20px;
+    }
+    
+    #regionInfo {
+        font-size: 14px;
+    }
+}

@@ -313,12 +313,12 @@
             const currentView = globe.pointOfView(); // Get the current view (lat, lng, altitude)
             globe.pointOfView({ ...currentView, altitude: responsiveAltitude }, 1000); // Smooth transition for altitude change
             });
-            /*
+            
             // Add initial animation
             setTimeout(() => {
                 // Don't animate on initial load, just set the position
                 globe.pointOfView({ lat: 30, lng: 0, altitude: 2.5 });
-            }, 200);*/
+            }, 200);
         }
 
         // Add event listener for spin button
