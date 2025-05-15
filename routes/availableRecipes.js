@@ -33,9 +33,16 @@ module.exports = function (db) {
                 return normalizedIngredients.every(ing => pantryNames.includes(ing));
             });
 
+            const favourites = await db.collection('favourites')
+            .find({ userId })
+            .toArray();
+
+        const favouriteMealIds = favourites.map(f => String(f.mealId));
+
 
             res.render('availableRecipes', {
                 meals: matchedMeals,
+                favouriteMealIds,
                 user: req.session.user
             });
         } catch (err) {
