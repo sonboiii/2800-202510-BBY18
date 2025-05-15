@@ -1,6 +1,6 @@
 const express = require('express');
 
-module.exports = function(db) {
+module.exports = function (db) {
     const router = express.Router();
 
     // GET /meals/areas — return unique areas
@@ -21,8 +21,15 @@ module.exports = function(db) {
         const areaName = req.params.area;
 
         try {
+            const userId = req.session.user._id;
             const meals = await db.collection('meals').find({ area: areaName }).toArray();
-            res.render('availableRecipes', { meals });
+            const favourites = await db.collection('favourites').find({ userId }).toArray();
+            const favouriteMealIds = favourites.map(f => String(f.mealId));
+            res.render('availableRecipes', {
+            meals,
+            favouriteMealIds, 
+            user: req.session.user 
+        });
         } catch (err) {
             next(err);
         }

@@ -46,12 +46,14 @@ connectDB().then(db => {
   const ingredientsRouter = require('./routes/ingredients')(db);
   const areasRouter = require('./routes/areas')(db);
   const availableRecipesRoutes = require('./routes/availableRecipes')(db);
+  const favouritesRouter = require('./routes/favourites')(db);
 
 app.use(auth.router);
 app.use('/pantry', pantryRouter);
 app.use('/ingredients', ingredientsRouter);
 app.use('/areas', areasRouter);
 app.use('/available-recipes', availableRecipesRoutes);
+app.use('/favourites', favouritesRouter);
 
 /* Routes Section */
 app.get('/', (req, res) => {

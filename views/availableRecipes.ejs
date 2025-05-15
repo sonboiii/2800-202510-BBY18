@@ -1,40 +1,62 @@
 <%- include('templates/header', { title: 'Available Recipes' }) %>
 
-<div class="container py-5">
-  <h2 class="mb-4 text-center">Available Recipes</h2>
-  <div class="row row-cols-1 row-cols-md-3 g-4">
+<% const favouriteIds = typeof favouriteMealIds !== 'undefined' ? favouriteMealIds : []; %>
+<% function isFavourited(mealId) { return favouriteIds.includes(String(mealId)); } %>
 
-    <% meals.forEach(meal => { %>
-      <div class="col">
-        <div class="card h-100">
-          <img src="<%= meal.thumbnail %>" class="card-img-top" alt="<%= meal.name %>">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title"><%= meal.name %></h5>
-            <p class="mb-1"><strong>Category:</strong> <%= meal.category %></p>
-            <p class="mb-2"><strong>Origin:</strong> <%= meal.area %></p>
 
-            <p class="card-text text-muted small mb-3" style="flex-grow: 1;">
-              <%= meal.instructions.slice(0, 140) %>...
-            </p>
+    <div class="container py-5">
+      <h2 class="mb-4 text-center">Available Recipes</h2>
+      <div class="row row-cols-1 row-cols-md-3 g-4">
 
-            <a href="/available-recipes/recipe/<%= meal._id %>" class="btn btn-outline-primary mt-auto">
-              Full Instructions
-            </a>
+        <% meals.forEach(meal=> { %>
+          <div class="col">
+            <div class="card h-100">
+              <img src="<%= meal.thumbnail %>" class="card-img-top" alt="<%= meal.name %>">
+              <div class="card-body d-flex flex-column">
+                <h5 class="card-title">
+                  <%= meal.name %>
+                </h5>
+                <p class="mb-1"><strong>Category:</strong>
+                  <%= meal.category %>
+                </p>
+                <p class="mb-2"><strong>Origin:</strong>
+                  <%= meal.area %>
+                </p>
 
-            <ul class="list-group list-group-flush mt-3">
-              <% meal.ingredients.forEach(ing => { %>
-                <li class="list-group-item small">
-                  <%= ing.name %>
-                  <% if (ing.measure) { %> — <%= ing.measure %> <% } %>
-                </li>
-              <% }) %>
-            </ul>
+                <p class="card-text text-muted small mb-3" style="flex-grow: 1;">
+                  <%= meal.instructions.slice(0, 140) %>...
+                </p>
+
+                <a href="/available-recipes/recipe/<%= meal._id %>" class="btn btn-outline-primary mt-auto">
+                  Full Instructions
+                </a>
+
+                <% if (isFavourited(meal._id)) { %>
+                  <form action="/favourites/remove/<%= meal._id %>" method="POST" class="mt-2" onsubmit="return confirm('Are you sure you want to remove this recipe from your favourites?');">
+                    <button class="btn btn-outline-secondary btn-sm w-100">Remove from Favourites</button>
+                  </form>
+                  <% } else { %>
+                    <form action="/favourites/<%= meal._id %>" method="POST" class="mt-2">
+                      <button class="btn btn-outline-danger btn-sm w-100">Add to Favourites</button>
+                    </form>
+                    <% } %>
+
+
+                      <ul class="list-group list-group-flush mt-3">
+                        <% meal.ingredients.forEach(ing=> { %>
+                          <li class="list-group-item small">
+                            <%= ing.name %>
+                              <% if (ing.measure) { %> — <%= ing.measure %>
+                                  <% } %>
+                          </li>
+                          <% }) %>
+                      </ul>
+              </div>
+            </div>
           </div>
-        </div>
+          <% }) %>
+
       </div>
-    <% }) %>
+    </div>
 
-  </div>
-</div>
-
-<%- include('templates/footer') %>
+    <%- include('templates/footer') %>
