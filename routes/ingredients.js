@@ -103,7 +103,7 @@ Remember to use .md format to add visual aid.
 ${meal.instructions}
       `.trim();
 
-            const [descRes, stepsRes] = await Promise.all([
+            const descRes = await
                 openai.chat.completions.create({
                     model:       "qwen/qwen3-8b:free",
                     messages: [
@@ -112,26 +112,12 @@ ${meal.instructions}
                     ],
                     temperature: 0.7,
                     max_tokens:  5000
-                }),
-                openai.chat.completions.create({
-                    model:       "qwen/qwen3-8b:free",
-                    messages: [
-                        { role: "system", content: "You turn long instructions into concise bullets." },
-                        { role: "user",   content: stepsPrompt }
-                    ],
-                    temperature: 0.7,
-                    max_tokens:  500
                 })
-            ]);
 
             const aiDescription = descRes.choices[0].message.content.trim();
-            const aiStepSummary = stepsRes.choices[0].message.content
-                .trim()
-                .split(/\r?\n/)
-                .map(line => line.replace(/^[-\d.\s]+/, '').trim())
-                .filter(line => line);
 
-            return res.json({ aiDescription, aiStepSummary });
+
+            return res.json({ aiDescription} );
         } catch (err) {
             next(err);
         }
