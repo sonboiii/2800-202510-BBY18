@@ -122,7 +122,7 @@ spinBtn.addEventListener('click', spinGlobe);
 
 async function fetchAreas() {
     try {
-        const res = await fetch('/meals/areas');
+        const res = await fetch('/areas');
         const areaNames = await res.json();
 
         // Filter and map areas to include only valid areas with coordinates
@@ -271,6 +271,16 @@ function finishSpin() {
         .pointColor((point) => point.name === selectedRegion.name ? '#ff6b6b' : '#4CAF50') // Red for selected region
         .pointAltitude((point) => point.name === selectedRegion.name ? 0.1 : 0.01)
         .pointRadius((point) => point.name === selectedRegion.name ? 1.0 : 0.5); // Larger marker for selected region
+
+    const viewRecipeBtn = document.getElementById('viewRecipeBtn');
+
+    console.log(selectedRegion.name);
+
+    if (viewRecipeBtn) {
+        viewRecipeBtn.onclick = () => {
+        window.location.href = '/areas/' + encodeURIComponent(selectedRegion.name);
+        };
+    }
 
     // Enable spin button again after some time
     setTimeout(() => {

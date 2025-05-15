@@ -44,13 +44,13 @@ connectDB().then(db => {
   const auth = require('./src/auth')(db);
   const pantryRouter = require('./routes/pantry')(db);
   const ingredientsRouter = require('./routes/ingredients')(db);
-  const mealsRouter = require('./routes/meals')(db);
+  const areasRouter = require('./routes/areas')(db);
   const availableRecipesRoutes = require('./routes/availableRecipes')(db);
 
 app.use(auth.router);
 app.use('/pantry', pantryRouter);
 app.use('/ingredients', ingredientsRouter);
-app.use('/meals', mealsRouter);
+app.use('/areas', areasRouter);
 app.use('/available-recipes', availableRecipesRoutes);
 
 /* Routes Section */
