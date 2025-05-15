@@ -1,73 +1,89 @@
-<%- include('templates/header', { title: 'Nearby Stores' }) %>
-
-<style>
-  html, body { margin:0; padding:0; height:100%; }
-  #map { width:100%; height:100vh; } /* height adjusted for footer */
-  #enable-loc {
-    position: absolute;
-    top: 10px; left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    padding: .5em 1em;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-</style>
-
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Nearby Grocery Stores</title>
+    <link
+            rel="stylesheet"
+            href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
+    />
+    <style>
+        html, body { margin:0; padding:0; height:100%; }
+        #map { width:100%; height:100%; }
+        #enable-loc {
+            position: absolute;
+            top: 10px; left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            padding: .5em 1em;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
 <!-- Button to trigger geolocation prompt -->
 <button id="enable-loc">
-  <%= (lat && lon) ? 'Refresh Precise Location' : 'Enable Precise Location' %>
+    <%= (lat && lon) ? 'Refresh Precise Location' : 'Enable Precise Location' %>
 </button>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 <script>
-  const serverLat = <%= lat !== null ? lat : 'null' %>;
-  const serverLon = <%= lon !== null ? lon : 'null' %>;
-  const stores    = <%- JSON.stringify(stores) %>;
+    // Server-rendered values (may be null)
+    const serverLat = <%= lat !== null ? lat : 'null' %>;
+    const serverLon = <%= lon !== null ? lon : 'null' %>;
+    const stores    = <%- JSON.stringify(stores) %>;
 
-  const initialView = (serverLat && serverLon) ? [serverLat, serverLon] : [20, 0];
-  const initialZoom = (serverLat && serverLon) ? 15 : 2;
+    // If no coords yet, show world view; otherwise zoom into the user
+    const initialView = (serverLat && serverLon)
+        ? [serverLat, serverLon]
+        : [20, 0];       // arbitrary “world” center
+    const initialZoom = (serverLat && serverLon) ? 15 : 2;
 
-  const map = L.map('map').setView(initialView, initialZoom);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
+    const map = L.map('map').setView(initialView, initialZoom);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 
-  if (serverLat && serverLon) {
-    L.marker([serverLat, serverLon])
-      .addTo(map)
-      .bindPopup('Your location')
-      .openPopup();
+    // If we have real coords, plot the user + stores
+    if (serverLat && serverLon) {
+        L.marker([serverLat, serverLon])
+            .addTo(map)
+            .bindPopup('Your location')
+            .openPopup();
 
-    stores.forEach(s => {
-      L.marker([s.lat, s.lon])
-        .addTo(map)
-        .bindPopup(s.name);
-    });
+        stores.forEach(s => {
+            L.marker([s.lat, s.lon])
+                .addTo(map)
+                .bindPopup(s.name);
+        });
 
-    document.getElementById('enable-loc').style.display = 'none';
-  }
-
-  document.getElementById('enable-loc').onclick = () => {
-    if (!navigator.geolocation) {
-      return alert('Geolocation not supported by your browser');
+        // hide the button once we’re done
+        document.getElementById('enable-loc').style.display = 'none';
     }
-    navigator.geolocation.getCurrentPosition(
-      ({ coords }) => {
-        const lat = coords.latitude.toFixed(6);
-        const lon = coords.longitude.toFixed(6);
-        window.location.href = `/stores?lat=${lat}&lon=${lon}`;
-      },
-      (err) => {
-        alert('Could not retrieve your location: ' + err.message);
-      },
-      { enableHighAccuracy: true, timeout: 10000 }
-    );
-  };
-</script>
 
-<%- include('templates/footer') %>
+    // On click, ask for HTML5 Geolocation and reload with ?lat=…&lon=…
+    document.getElementById('enable-loc').onclick = () => {
+        if (!navigator.geolocation) {
+            return alert('Geolocation not supported by your browser');
+        }
+        navigator.geolocation.getCurrentPosition(
+            ({ coords }) => {
+                const lat = coords.latitude.toFixed(6);
+                const lon = coords.longitude.toFixed(6);
+                // reload page with query-string
+                window.location.href = `/stores?lat=${lat}&lon=${lon}`;
+            },
+            (err) => {
+                alert('Could not retrieve your location: ' + err.message);
+            },
+            { enableHighAccuracy: true, timeout: 10000 }
+        );
+    };
+</script>
+</body>
+</html>
