@@ -1,9 +1,20 @@
+// routes/ingredients.js
 const express = require('express');
+const OpenAI = require('openai').default;
+
+const openai = new OpenAI({
+    baseURL:  "https://openrouter.ai/api/v1",
+    apiKey:   process.env.OPENROUTER_API_KEY,
+    defaultHeaders: {
+        "HTTP-Referer": process.env.SITE_URL || "",
+        "X-Title":      process.env.SITE_TITLE || ""
+    },
+});
 
 module.exports = function(db) {
     const router = express.Router();
 
-    // Render the search & selection page
+    // 1) Search & selection page
     router.get('/', (req, res) => {
         if (!req.session.user) return res.redirect('/login');
         res.render('ingredients', {
@@ -13,7 +24,7 @@ module.exports = function(db) {
         });
     });
 
-    // AJAX endpoint: fuzzy-search ingredients by name
+    // 2) AJAX fuzzy-search
     router.get('/search', async (req, res, next) => {
         if (!req.session.user) return res.status(401).json([]);
         try {
@@ -29,32 +40,24 @@ module.exports = function(db) {
         }
     });
 
-    // Handle “Get Meals” form submission
+    // 3) “Get Meals” form submission
     router.post('/meals', async (req, res, next) => {
         if (!req.session.user) return res.redirect('/login');
         try {
-            let ingredientIds = req.body['ingredients[]'] || req.body.ingredients || [];
-            if (!Array.isArray(ingredientIds)) ingredientIds = [ingredientIds];
+            let ids = req.body['ingredients[]'] || req.body.ingredients || [];
+            if (!Array.isArray(ids)) ids = [ids];
 
-            // fetch the names of the selected ingredients
             const selectedDocs = await db.collection('ingredients')
-                .find({ _id: { $in: ingredientIds } })
+                .find({ _id: { $in: ids } })
                 .project({ _id: 1, name: 1 })
                 .toArray();
 
-            // find all meals that contain *all* the selected ingredient IDs
             const meals = await db.collection('meals').aggregate([
-                { $match: { 'ingredients.id': { $all: ingredientIds } } },
-                {
-                    $project: {
-                        name: 1,
-                        category: 1,
-                        area: 1,
-                        instructions: 1,
-                        thumbnail: 1,
-                        ingredients: 1
-                    }
-                }
+                { $match: { 'ingredients.id': { $all: ids } } },
+                { $project: {
+                        name: 1, category: 1, area: 1,
+                        instructions: 1, thumbnail: 1, ingredients: 1
+                    }}
             ]).toArray();
 
             res.render('ingredients', {
@@ -67,17 +70,77 @@ module.exports = function(db) {
         }
     });
 
-    // Meal detail page (Read More)
+    // 4) JSON endpoint for AI summary — MUST come before the detail-route
+    router.get('/meal/:id/summary', async (req, res, next) => {
+        res.set('Cache-Control', 'no-store, max-age=0');
+        res.set('Pragma', 'no-cache');
+        if (!req.session.user)
+            return res.status(401).json({ error: 'Unauthorized' });
+
+        try {
+            const meal = await db.collection('meals').findOne({ _id: req.params.id });
+            if (!meal)
+                return res.status(404).json({ error: 'Meal not found' });
+
+            const dishPrompt = `
+You are a friendly kitchen assistant.
+Have more details and be more coherent
+Write an appetizing description for this recipe:
+Name: ${meal.name}
+Category: ${meal.category}
+Area: ${meal.area}
+Ingredients:
+${meal.ingredients.map(i => `- ${i.name}: ${i.measure}`).join('\n')}
+      `.trim();
+
+            const stepsPrompt = `
+You are a cooking guide.
+Lookup the instruction and then
+Summarize these cooking instructions:
+${meal.instructions}
+      `.trim();
+
+            const [descRes, stepsRes] = await Promise.all([
+                openai.chat.completions.create({
+                    model:       "qwen/qwen3-8b:free",
+                    messages: [
+                        { role: "system", content: "You summarize recipes." },
+                        { role: "user",   content: dishPrompt }
+                    ],
+                    temperature: 0.7,
+                    max_tokens:  1000
+                }),
+                openai.chat.completions.create({
+                    model:       "qwen/qwen3-8b:free",
+                    messages: [
+                        { role: "system", content: "You turn long instructions into concise bullets." },
+                        { role: "user",   content: stepsPrompt }
+                    ],
+                    temperature: 0.7,
+                    max_tokens:  2000
+                })
+            ]);
+
+            const aiDescription = descRes.choices[0].message.content.trim();
+            const aiStepSummary = stepsRes.choices[0].message.content
+                .trim()
+                .split(/\r?\n/)
+                .map(line => line.replace(/^[-\d.\s]+/, '').trim())
+                .filter(line => line);
+
+            return res.json({ aiDescription, aiStepSummary });
+        } catch (err) {
+            next(err);
+        }
+    });
+
+    // 5) Full-detail page — now only matches /meal/:id exactly
     router.get('/meal/:id', async (req, res, next) => {
         if (!req.session.user) return res.redirect('/login');
         try {
-            const mealId = req.params.id;
-            const meal = await db.collection('meals').findOne({ _id: mealId });
+            const meal = await db.collection('meals').findOne({ _id: req.params.id });
             if (!meal) return res.status(404).send('Meal not found');
-            res.render('meal', {
-                title: meal.name,
-                meal
-            });
+            res.render('meal', { title: meal.name, meal });
         } catch (err) {
             next(err);
         }

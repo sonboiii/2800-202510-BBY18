@@ -2,7 +2,7 @@
 
 <style>
     body {
-        font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        font-family: 'Segoe UI','Helvetica Neue',Arial,sans-serif;
         line-height: 1.5;
     }
 </style>
@@ -10,14 +10,20 @@
 <div class="container py-5">
     <h1 class="mb-4 text-center"><%= meal.name %></h1>
 
-    <!-- Image & Ingredients Side by Side -->
+    <!-- Image & Ingredients -->
     <div class="row mb-5">
         <div class="col-lg-6 mb-4">
             <div class="card shadow-sm h-100">
                 <img src="<%= meal.thumbnail %>" class="card-img-top" alt="<%= meal.name %>">
                 <div class="card-body">
-                    <p class="mb-2"><strong>Category:</strong> <span class="badge bg-secondary"><%= meal.category %></span></p>
-                    <p><strong>Area:</strong> <span class="badge bg-info text-dark"><%= meal.area %></span></p>
+                    <p class="mb-2">
+                        <strong>Category:</strong>
+                        <span class="badge bg-secondary"><%= meal.category %></span>
+                    </p>
+                    <p>
+                        <strong>Area:</strong>
+                        <span class="badge bg-info text-dark"><%= meal.area %></span>
+                    </p>
                 </div>
             </div>
         </div>
@@ -38,7 +44,39 @@
         </div>
     </div>
 
-    <!-- Single Instructions Card -->
+    <!-- AI Cards Placeholders -->
+    <div id="ai-summary-section">
+        <!-- About This Dish -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">About This Dish</h5>
+            </div>
+            <div class="card-body" id="ai-description-body">
+                <div class="d-flex align-items-center">
+                    <div class="spinner-border me-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span>Loading description...</span>
+                </div>
+            </div>
+        </div>
+        <!-- Quick Steps -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light">
+                <h5 class="mb-0">Quick Steps</h5>
+            </div>
+            <div class="card-body" id="ai-steps-body">
+                <div class="d-flex align-items-center">
+                    <div class="spinner-border me-3" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <span>Loading steps...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Instructions Card -->
     <% const sentences = meal.instructions.split(/(?<=[.!?])\s+/).filter(s => s.trim()); %>
     <div class="card shadow-sm mb-4">
         <div class="card-header bg-light">
@@ -46,7 +84,9 @@
         </div>
         <ul class="list-group list-group-flush">
             <% sentences.forEach((sentence, idx) => { %>
-                <li class="list-group-item"><strong>Step <%= idx + 1 %>:</strong> <%= sentence.trim() %></li>
+                <li class="list-group-item">
+                    <strong>Step <%= idx+1 %>:</strong> <%= sentence.trim() %>
+                </li>
             <% }) %>
         </ul>
     </div>
@@ -58,5 +98,41 @@
         </a>
     </div>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const converter = new showdown.Converter();
+
+        fetch(`/ingredients/meal/<%= meal._id %>/summary`, {
+            credentials: 'same-origin',
+            cache:       'no-store'
+        })
+            .then(r => {
+                if (!r.ok) throw new Error(`Status ${r.status}`);
+                return r.json();
+            })
+            .then(data => {
+                // 1) Convert & inject the Markdown description
+                const descBody = document.getElementById('ai-description-body');
+                const descHtml = converter.makeHtml(data.aiDescription || '');
+                descBody.innerHTML = descHtml || '<p class="text-muted">No description available.</p>';
+
+                // 2) Convert & inject the Markdown steps as a list
+                const stepsBody = document.getElementById('ai-steps-body');
+                // join array into a Markdown bullet list
+                const stepsMd = data.aiStepSummary.map(step => `- ${step}`).join('\n');
+                const stepsHtml = converter.makeHtml(stepsMd);
+                stepsBody.innerHTML = stepsHtml || '<p class="text-muted">No summary available.</p>';
+            })
+            .catch(err => {
+                console.error(err);
+                document.getElementById('ai-description-body').innerHTML =
+                    '<p class="text-danger">Failed to load description.</p>';
+                document.getElementById('ai-steps-body').innerHTML =
+                    '<p class="text-danger">Failed to load steps.</p>';
+            });
+    });
+</script>
+
 
 <%- include('templates/footer') %>

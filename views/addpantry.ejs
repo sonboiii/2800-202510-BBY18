@@ -2,7 +2,8 @@
 
     <div class="container">
         <h1>Add Pantry Item</h1>
-        <form action="/pantry/add" method="POST" class="mt-4">
+        <form id="addForm" action="/pantry/add" method="POST" class="mt-4">
+
             <div class="mb-3">
                 <label for="name" class="form-label">Ingredient</label>
                 <input type="text" name="name" id="name" class="form-control" placeholder="Ingredient Name" required>
@@ -48,4 +49,4 @@
         </form>
     </div>
 
-    <%- include('templates/footer') %>
+ <%- include('templates/footer', { jsFiles: ['/js/addPantry.js'] }) %>

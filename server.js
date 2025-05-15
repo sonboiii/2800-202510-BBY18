@@ -15,6 +15,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.set('trust proxy', true);
 
 function requireLogin(req, res, next) {
@@ -44,11 +45,13 @@ connectDB().then(db => {
   const pantryRouter = require('./routes/pantry')(db);
   const ingredientsRouter = require('./routes/ingredients')(db);
   const mealsRouter = require('./routes/meals')(db);
+  const availableRecipesRoutes = require('./routes/availableRecipes')(db);
 
 app.use(auth.router);
 app.use('/pantry', pantryRouter);
 app.use('/ingredients', ingredientsRouter);
 app.use('/meals', mealsRouter);
+app.use('/available-recipes', availableRecipesRoutes);
 
 /* Routes Section */
 app.get('/', (req, res) => {

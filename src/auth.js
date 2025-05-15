@@ -61,11 +61,7 @@ module.exports = function (db) {
 
     let body = req.body;
     if (req.is('application/json')) {
-      body = await new Promise((resolve) => {
-        let data = '';
-        req.on('data', chunk => data += chunk);
-        req.on('end', () => resolve(JSON.parse(data)));
-      });
+      body = req.body;
     }
 
     const { error, value } = schema.validate(body);
