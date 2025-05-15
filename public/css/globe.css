@@ -7,7 +7,9 @@ body {
     overflow: hidden;
 }
 
-nav, footer, h2 {
+nav,
+footer,
+h2 {
     width: 100%;
     position: relative;
     z-index: 10;
@@ -46,7 +48,7 @@ h2 {
     margin-top: 20px;
 }
 
-.btn {
+#spinBtn {
     background-color: rgba(76, 175, 80, 0.8);
     color: white;
     padding: 12px 25px;
@@ -61,19 +63,19 @@ h2 {
     backdrop-filter: blur(5px);
 }
 
-.btn:hover {
+#spinBtn:hover {
     background-color: rgba(69, 160, 73, 0.9);
     transform: scale(1.05);
 }
 
-.btn:disabled {
+#spinBtn:disabled {
     background-color: rgba(204, 204, 204, 0.5);
     cursor: not-allowed;
     transform: scale(1);
 }
 
 .result {
-    color:yellow;
+    color: yellow;
     margin-top: 30px;
     padding: 20px;
     background-color: rgba(25, 25, 25, 0.8);
@@ -112,16 +114,16 @@ h2 {
     h1 {
         font-size: 1.8rem;
     }
-    
+
     .result {
         margin-top: 20px;
         padding: 15px;
     }
-    
+
     #regionName {
         font-size: 20px;
     }
-    
+
     #regionInfo {
         font-size: 14px;
     }
