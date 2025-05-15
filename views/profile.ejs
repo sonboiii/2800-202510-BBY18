@@ -1,0 +1,19 @@
+<%- include('templates/header', { title: 'Your Profile' }) %>
+
+
+<div class="w-50 mx-auto shadow rounded p-4 bg-white">
+    <h1 class="mb-4 text-center">Your Profile</h1>
+  <form action="/profile" method="POST">
+    <div class="mb-3">
+      <label for="name" class="form-label">Name</label>
+      <input type="text" id="name" name="name" value="<%= user.name %>" class="form-control" required>
+    </div>
+    <div class="mb-3">
+      <label for="email" class="form-label">Email</label>
+      <input type="email" id="email" name="email" value="<%= user.email %>" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary fancy-hover">Save Changes</button>
+  </form>
+</div>
+
+<%- include('templates/footer') %>

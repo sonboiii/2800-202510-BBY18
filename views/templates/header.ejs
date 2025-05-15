@@ -19,7 +19,9 @@
     <script src="https://cdn.jsdelivr.net/npm/showdown@2/dist/showdown.min.js"></script>
 
     <link rel="stylesheet" href="../css/styles.css" />
+  <link rel="stylesheet" href="../css/styles.css" />
   <link rel="stylesheet" href="/css/home.css">
+<<<<<<< HEAD
   
   <!-- Loads various CSS files -->
   <% if (typeof cssFiles !== 'undefined' && cssFiles.length > 0) { %>
@@ -27,6 +29,11 @@
           <link rel="stylesheet" href="<%= file %>">
       <% }) %>
   <% } %>
+=======
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"/>
+
+
+>>>>>>> profile_page
 </head>
 
 <body class="d-flex flex-column h-100">
@@ -41,23 +48,25 @@
         <ul class="navbar-nav ms-auto">
           <% if (typeof user !=='undefined' ) { %>
             <li class="nav-item">
-              <span class="nav-link">Hi, <%= user.name %></span>
+              <span class="nav-link text-light"><%= user.name %></span>
+            </li>
+            <a class="nav-link text-light btn btn-success fancy-hover" href="/pantry">Pantry</a>
+            <li class="nav-item">
+              <a class="nav-link text-light btn btn-success fancy-hover" href="/stores">Store Locator</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/logout">Logout</a>
+              <a class="nav-link text-light btn btn-success fancy-hover" href="/profile">Profile</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link text-light btn btn-outline-danger fancy-hover" href="/logout">Logout</a>
             </li class="nav-item">
-            <a class="nav-link text-light" href="/pantry">Pantry</a>
-            <li class="nav-item">
-              <a class="nav-link text-light" href="/stores">Store Locator</a>
-            </li>
-            <li></li>
 
             <% } else { %>
               <li class="nav-item">
-                <a class="nav-link" href="/login">Login</a>
+                <a class="nav-link text-light btn btn-success fancy-hover" href="/login">Login</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" href="/signup">Sign Up</a>
+                <a class="nav-link text-light btn btn-outline-danger fancy-hover" href="/signup">Sign Up</a>
               </li>
               <% } %>
         </ul>

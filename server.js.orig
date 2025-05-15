@@ -48,11 +48,18 @@ connectDB().then(db => {
   const areasRouter = require('./routes/areas')(db);
   const availableRecipesRoutes = require('./routes/availableRecipes')(db);
 
+<<<<<<< HEAD
 app.use(auth.router);
 app.use('/pantry', pantryRouter);
 app.use('/ingredients', ingredientsRouter);
 app.use('/areas', areasRouter);
 app.use('/available-recipes', availableRecipesRoutes);
+=======
+  app.use(auth.router);
+  app.use('/pantry', pantryRouter);
+  app.use('/ingredients', ingredientsRouter);
+  app.use('/available-recipes', availableRecipesRoutes);
+>>>>>>> profile_page
 
   /* Routes Section */
   app.get('/', (req, res) => {
@@ -158,11 +165,11 @@ app.use('/available-recipes', availableRecipesRoutes);
     }
   });
 
-
-
+<<<<<<< HEAD
 app.get('/globe', (req, res) => {
   res.render('globe');
 });
+=======
 
   app.get('/profile', requireLogin, (req, res) => {
     res.render('profile', { user: req.session.user });
@@ -190,6 +197,7 @@ app.get('/globe', (req, res) => {
       res.status(500).send('Error updating profile');
     }
   });
+>>>>>>> profile_page
 
 
   /* END Route Section */

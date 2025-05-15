@@ -1,5 +1,6 @@
 /* Full-height layout */
-html, body {
+html,
+body {
     height: 100%;
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
@@ -54,4 +55,12 @@ footer {
     color: white;
     text-align: center;
     padding: 1rem;
+}
+
+.fancy-hover {
+    transition: all 0.3s ease;
+}
+
+.fancy-hover:hover {
+    transform: scale(1.05);
 }
