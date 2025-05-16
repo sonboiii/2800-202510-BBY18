@@ -7,11 +7,31 @@
     <h3 id="meal-time-msg" class="text-center  fs-8 fw-bold text-muted"></h3>
     <button id="store-btn" class="btn btn-primary mt-3">Closest Store</button>
     <button id="ingredient-btn" class="btn btn-primary mt-3">Ingredients</button>
-    <a href="/logout" class="btn btn-outline-danger mt-3">Logout</a>
+    <button id="globe-btn" class="btn btn-primary mt-3">Globe</button>
+    <button id="pantry-btn" class="btn btn-primary mt-3 fancy-hover">Pantry</button>
 </div>
 
+<!--Tentative placement-->
+<div class="card mt-5 mx-auto" style="max-width: 500px;">
+  <div class="card-body text-center">
+    <h5 class="card-title">See What You Can Make</h5>
+    <p class="card-text">Find recipes you can cook today!</p>
+    <a href="/available-recipes" class="btn btn-outline-primary fancy-hover">View Available Recipes</a>
+  </div>
+</div>
+
+<!-- AI Food Fact Section -->
+<div class="card mt-4 mx-auto text-center" style="max-width: 600px;">
+  <div class="card-body">
+    <h5 class="card-title">Fun Food Fact!</h5>
+    <p id="food-fact-text" class="card-text text-muted">Click the button to discover a food fact!</p>
+    <button id="refresh-food-fact" class="btn btn-outline-info btn-sm mt-2">Get a Food Fact</button>
+  </div>
+</div>
+
+
 <%- include('templates/footer', {
-jsFiles: ['/js/location.js', '/js/greeting_time.js']
+jsFiles: ['/js/location.js', '/js/greeting_time.js', '/js/foodfact.js']
 }) %>
 
 <script>
@@ -21,9 +41,16 @@ jsFiles: ['/js/location.js', '/js/greeting_time.js']
   });
 
   document.getElementById('ingredient-btn').addEventListener('click', function(e) {
-      e.preventDefault();
-      window.location.href = '/ingredients';
+    e.preventDefault();
+    window.location.href = '/ingredients';
+  });
+
+  document.getElementById('globe-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = '/globe';
+  });
+  document.getElementById('pantry-btn').addEventListener('click', function(e) {
+    e.preventDefault();
+    window.location.href = '/pantry';
   });
 </script>
-
-

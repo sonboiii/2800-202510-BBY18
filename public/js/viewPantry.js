@@ -53,7 +53,6 @@ function formatDateForInput(dateString) {
   return `${year}-${month}-${day}`;
 }
 
-
 function openEditModal(id) {
   const item = pantryData.find(i => i._id === id);
   if (!item) return;
@@ -65,8 +64,8 @@ function openEditModal(id) {
   document.getElementById('editQuantity').value = item.quantity;
   document.getElementById('editUnit').value = item.unit;
   document.getElementById('editCategory').value = item.category;
-  document.getElementById('editExpirationDate').value = item.expirationDate 
-    ? item.expirationDate.split('T')[0] 
+  document.getElementById('editExpirationDate').value = item.expirationDate
+    ? item.expirationDate.split('T')[0]
     : '';
 
   const modal = new bootstrap.Modal(document.getElementById('editModal'));
@@ -90,8 +89,53 @@ document.getElementById('editForm').addEventListener('submit', async function (e
   if (res.ok) {
     const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
     modal.hide();
-    fetchPantryItems(); 
+    fetchPantryItems();
   } else {
     alert('Failed to update item');
   }
 });
+
+let lastClearedItems = []; // store current pantry in local mem
+
+async function confirmClearPantry() {
+  const confirmed = confirm("Are you sure you want to clear your entire pantry?");
+  if (!confirmed) return;
+
+  try {
+    lastClearedItems = [...pantryData];
+    const res = await fetch('/pantry/clear', { method: 'POST' });
+
+    if (res.ok) {
+      showUndoClearToast();
+      fetchPantryItems();
+    } else {
+      alert('Something went wrong while clearing your pantry.');
+    }
+  } catch (err) {
+    console.error("Error clearing pantry:", err);
+    alert("Something went wrong while clearing your pantry.");
+  }
+}
+
+function showUndoClearToast() {
+  const toastEl = document.getElementById('undo-clear-toast');
+  const toast = new bootstrap.Toast(toastEl, { delay: 10000 });
+  toast.show();
+}
+
+async function undoClearPantry() {
+  if (!lastClearedItems.length) return;
+
+  const res = await fetch('/pantry/restore', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items: lastClearedItems })
+  });
+
+  if (res.ok) {
+    lastClearedItems = [];
+    fetchPantryItems();
+  } else {
+    alert("Failed to restore pantry items");
+  }
+}

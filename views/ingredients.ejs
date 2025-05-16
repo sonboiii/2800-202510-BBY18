@@ -1,34 +1,194 @@
 <%- include('templates/header', { title }) %>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <div class="container py-5">
     <h1 class="mb-4"><%= title %></h1>
 
-    <form method="POST" action="/ingredients">
+    <div class="mb-3 position-relative">
+        <label for="ingredient-search" class="form-label">Search ingredients:</label>
+        <input
+                type="text"
+                id="ingredient-search"
+                class="form-control"
+                placeholder="Type an ingredient name…"
+                autocomplete="off"
+        />
+        <ul
+                id="suggestions"
+                class="list-group position-absolute w-100"
+                style="z-index:1000; max-height:200px; overflow-y:auto;"
+        ></ul>
+    </div>
+
+    <form method="POST" action="/ingredients/meals" id="ingredients-form">
         <div class="mb-3">
-            <label for="ingredients" class="form-label">
-                Enter ingredients (comma-separated):
-            </label>
-            <input
-                    type="text"
-                    id="ingredients"
-                    name="ingredients"
-                    class="form-control"
-                    placeholder="e.g. broccoli, cheese, pasta"
-                    value="<%= ingredientsInput %>"
-                    required
-            />
+            <label class="form-label">Selected ingredients:</label>
+            <ul id="selected-list" class="list-group mb-3">
+                <% selectedIngredients.forEach(ing => { %>
+                    <li
+                            class="list-group-item d-flex justify-content-between align-items-center"
+                            data-id="<%= ing._id %>"
+                    >
+                        <%= ing.name %>
+                        <button type="button" class="btn btn-sm btn-danger remove-btn">Remove</button>
+                    </li>
+                <% }) %>
+            </ul>
         </div>
-        <button type="submit" class="btn btn-primary">Get Recipes</button>
+
+        <% selectedIngredients.forEach(ing => { %>
+            <input type="hidden" name="ingredients[]" value="<%= ing._id %>">
+        <% }) %>
+
+        <button type="submit" class="btn btn-primary">Get Meals</button>
     </form>
 
-    <% if (recipes.length) { %>
+    <% if (meals.length) { %>
         <h2 class="mt-5">Recipes</h2>
-        <ul class="list-group mt-3">
-            <% recipes.forEach(recipe => { %>
-                <li class="list-group-item"><%= recipe %></li>
+        <div class="row">
+            <% meals.forEach(meal => { %>
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="<%= meal.thumbnail %>" class="card-img-top" alt="<%= meal.name %>">
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title"><%= meal.name %></h5>
+                            <p class="card-text"><strong>Category:</strong> <%= meal.category %></p>
+                            <p class="card-text"><strong>Area:</strong> <%= meal.area %></p>
+                            <a href="/ingredients/meal/<%= meal._id %>"
+                               class="btn btn-sm btn-outline-primary rounded-pill shadow-sm mt-auto px-4">
+                                Read More
+                            </a>
+                            <div class="collapse mt-2" id="instr-<%= meal._id %>">
+                                <p><%= meal.instructions %></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             <% }) %>
-        </ul>
+        </div>
     <% } %>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.getElementById('ingredient-search');
+        const suggestions = document.getElementById('suggestions');
+        const selectedList = document.getElementById('selected-list');
+        const form = document.getElementById('ingredients-form');
+
+        // keep track of selected ingredients
+        const selected = new Map();
+        <% selectedIngredients.forEach(ing => { %>
+        selected.set('<%= ing._id %>', '<%= ing.name %>');
+        <% }) %>
+
+        function renderSelected() {
+            selectedList.innerHTML = '';
+            selected.forEach((name, id) => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center';
+                li.dataset.id = id;
+                li.textContent = name;
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.className = 'btn btn-sm btn-danger remove-btn';
+                btn.textContent = 'Remove';
+                btn.addEventListener('click', () => {
+                    selected.delete(id);
+                    updateHiddenInputs();
+                    renderSelected();
+                });
+                li.appendChild(btn);
+                selectedList.appendChild(li);
+            });
+        }
+
+        function updateHiddenInputs() {
+            form.querySelectorAll('input[name="ingredients[]"]').forEach(el => el.remove());
+            selected.forEach((_, id) => {
+                const inp = document.createElement('input');
+                inp.type = 'hidden';
+                inp.name = 'ingredients[]';
+                inp.value = id;
+                form.appendChild(inp);
+            });
+        }
+
+        let debounce;
+        searchInput.addEventListener('input', e => {
+            clearTimeout(debounce);
+            const q = e.target.value.trim();
+            if (!q) {
+                suggestions.innerHTML = '';
+                return;
+            }
+            debounce = setTimeout(async () => {
+                const res = await fetch(`/ingredients/search?q=${encodeURIComponent(q)}`);
+                const list = await res.json();
+
+                // filter duplicates by lowercase name, prefer capitalized
+                const groups = list.reduce((acc, item) => {
+                    const lower = item.name.toLowerCase();
+                    acc[lower] = acc[lower] || [];
+                    acc[lower].push(item);
+                    return acc;
+                }, {});
+                const filtered = Object.values(groups).map(group => {
+                    return group.find(item => item.name[0] === item.name[0].toUpperCase()) || group[0];
+                });
+
+                suggestions.innerHTML = '';
+                filtered.forEach(item => {
+                    if (selected.has(item._id)) return;
+                    const li = document.createElement('li');
+                    li.className = 'list-group-item list-group-item-action';
+                    li.textContent = item.name;
+                    li.dataset.id = item._id;
+                    li.addEventListener('click', () => {
+                        selected.set(item._id, item.name);
+                        updateHiddenInputs();
+                        renderSelected();
+                        suggestions.innerHTML = '';
+                        searchInput.value = '';
+                    });
+                    suggestions.appendChild(li);
+                });
+            }, 300);
+        });
+
+        // hook into form submission to ensure at least one ingredient
+        form.addEventListener('submit', e => {
+            if (selected.size === 0) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No ingredients selected',
+                    text: 'Please input at least 1 ingredient before searching.'
+                });
+            }
+        });
+
+        // remove any pre-rendered items’ buttons
+        selectedList.querySelectorAll('.remove-btn').forEach(btn =>
+            btn.addEventListener('click', e => {
+                const li = e.target.closest('li');
+                selected.delete(li.dataset.id);
+                updateHiddenInputs();
+                renderSelected();
+            })
+        );
+
+        renderSelected();
+
+        // show alert if no meals found for selected ingredients
+        <% if (!meals.length && selectedIngredients.length) { %>
+        Swal.fire({
+            icon: 'info',
+            title: 'No meals found',
+            text: 'No recipes were found for the selected ingredients. Please adjust your selection.'
+        });
+        <% } %>
+    });
+</script>
 
 <%- include('templates/footer') %>
