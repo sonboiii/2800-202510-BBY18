@@ -66,7 +66,6 @@ module.exports = function (db) {
             const raw = aiResponse.choices?.[0]?.message?.content?.trim();
             const description = raw && raw.length > 0 ? raw : "No Description Found.";
 
-            console.log(description);
             res.json({ area, description });
 
         } catch (err) {
