@@ -51,19 +51,18 @@ module.exports = function (db) {
         const area = req.params.area;
 
         try {
-            const prompt = `Describe ${area} cuisine in one appetizing sentence. Use **no more than 20 words** and complete the thought clearly. Omit specific dish examples.`;
+            const prompt = `Describe ${area} cuisine in one appetizing sentence, no more than 20 words. Avoid specific dish names.`;
 
             const aiResponse = await openai.chat.completions.create({
                 model: "qwen/qwen3-8b:free",
                 messages: [
-                    { role: "system", content: "You are a helpful culinary assistant who writes enticing cuisine summaries." },
+                    { role: "system", content: "You are a helpful assistant. Provide only the requested cuisine description, no explanations or reasoning." },
                     { role: "user", content: prompt }
                 ],
                 temperature: 0.7,
                 max_tokens: 400
             });
-
-            console.log('AI raw response:', JSON.stringify(aiResponse, null, 2));  // log full response for debugging
+            
             const raw = aiResponse.choices?.[0]?.message?.content?.trim();
             const description = raw && raw.length > 0 ? raw : "No Description Found.";
 
