@@ -20,8 +20,18 @@
   </div>
 </div>
 
+<!-- AI Food Fact Section -->
+<div class="card mt-4 mx-auto text-center" style="max-width: 600px;">
+  <div class="card-body">
+    <h5 class="card-title">Fun Food Fact!</h5>
+    <p id="food-fact-text" class="card-text text-muted">Click the button to discover a food fact!</p>
+    <button id="refresh-food-fact" class="btn btn-outline-info btn-sm mt-2">Get a Food Fact</button>
+  </div>
+</div>
+
+
 <%- include('templates/footer', {
-jsFiles: ['/js/location.js', '/js/greeting_time.js']
+jsFiles: ['/js/location.js', '/js/greeting_time.js', '/js/foodfact.js']
 }) %>
 
 <script>

@@ -40,6 +40,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// Misc Routers
+const foodfactRouter = require('./routes/foodfact')();
+app.use('/api/foodfact', foodfactRouter);
+
+
 // Connect DB
 connectDB().then(db => {
   const auth = require('./src/auth')(db);
@@ -48,6 +53,7 @@ connectDB().then(db => {
   const areasRouter = require('./routes/areas')(db);
   const availableRecipesRoutes = require('./routes/availableRecipes')(db);
   const favouritesRouter = require('./routes/favourites')(db);
+  
 
 app.use(auth.router);
 app.use('/pantry', pantryRouter);
