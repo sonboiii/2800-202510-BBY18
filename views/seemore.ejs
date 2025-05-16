@@ -1,0 +1,31 @@
+<%- include('templates/header', { title: meal.name }) %>
+
+<div class="container mt-5">
+    <h2><%= meal.name %></h2>
+
+    <% if (meal.thumbnail) { %>
+        <img src="<%= meal.thumbnail %>" class="img-fluid rounded my-3" alt="<%= meal.name %>">
+    <% } %>
+
+    <p><strong>Category:</strong> <%= meal.category %></p>
+    <p><strong>Origin:</strong> <%= meal.area %></p>
+
+    <h4 class="mt-4">Instructions</h4>
+    <p style="white-space: pre-line;"><%= meal.instructions %></p>
+
+    <h4 class="mt-4">Ingredients</h4>
+    <ul class="list-group">
+        <% meal.ingredients.forEach(ing => { %>
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <%= ing.name %>
+                <% if (ing.measure) { %>
+                    <span class="badge bg-secondary"><%= ing.measure %></span>
+                <% } %>
+            </li>
+        <% }) %>
+    </ul>
+
+    <a href="/available-recipes" class="btn btn-outline-secondary mt-4">Back to Recipes</a>
+</div>
+
+<%- include('templates/footer') %>

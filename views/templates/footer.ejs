@@ -9,21 +9,27 @@
   </div>
 </footer>
 
-<!-- Loads various JS files -->
+<!--
+
 <% if (typeof jsFiles !== 'undefined' && jsFiles.length > 0) { %>
     <% jsFiles.forEach(file => { %>
         <script src="<%= file %>"></script>
     <% }) %>
 <% } %>
+-->
 
-<!-- Three.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
 
-<!-- Donut animation (DOM-safe) -->
-<script>
-    window.addEventListener('DOMContentLoaded', function () {
+<!-- Donut (Burger) animation using modules -->
+<script type="module">
+    import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
+    import { GLTFLoader } from 'https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
+
+    (async () => {
         const container = document.getElementById('three-container');
-        if (!container) return;
+        if (!container) {
+            console.warn('three-container not found.');
+            return;
+        }
 
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
@@ -31,26 +37,39 @@
         renderer.setSize(200, 200);
         container.appendChild(renderer.domElement);
 
-        const geometry = new THREE.TorusGeometry(1, 0.4, 16, 100);
-        const material = new THREE.MeshStandardMaterial({ color: 0xff6f00 });
-        const donut = new THREE.Mesh(geometry, material);
-        scene.add(donut);
+        const pointLight = new THREE.PointLight(0xffffff, 1.2);
+        pointLight.position.set(5, 5, 5);
+        scene.add(pointLight);
 
-        const light = new THREE.PointLight(0xffffff, 1, 100);
-        light.position.set(5, 5, 5);
-        scene.add(light);
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
+        scene.add(ambientLight);
 
-        camera.position.z = 5;
+        camera.position.z = 10;
+
+        let burger;
+        const loader = new GLTFLoader();
+
+        loader.load('/html/burger.glb', (gltf) => {
+            burger = gltf.scene;
+            burger.scale.set(5, 5, 5);
+            burger.position.set(0, 0, 0);
+            burger.rotation.set(0, 0, 0);
+            scene.add(burger);
+            console.log('Burger model loaded:', gltf);
+        }, undefined, (error) => {
+            console.error('Error loading burger model:', error);
+        });
 
         function animate() {
             requestAnimationFrame(animate);
-            donut.rotation.x += 0.01;
-            donut.rotation.y += 0.01;
+            if (burger) {
+                burger.rotation.y += 0.01;
+            }
             renderer.render(scene, camera);
         }
 
         animate();
-    });
+    })();
 </script>
 
 </body>

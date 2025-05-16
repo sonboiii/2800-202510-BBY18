@@ -7,6 +7,7 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const fetch = require('node-fetch');      // v2.x
 const { connectDB, uri: mongoUri } = require('./db');
+console.log("→ [availableRecipes] GET /available-recipes route hit");
 const { ObjectId } = require('mongodb');
 
 const app = express();
@@ -53,7 +54,7 @@ connectDB().then(db => {
   const areasRouter = require('./routes/areas')(db);
   const availableRecipesRoutes = require('./routes/availableRecipes')(db);
   const favouritesRouter = require('./routes/favourites')(db);
-  
+
 
 app.use(auth.router);
 app.use('/pantry', pantryRouter);
@@ -175,23 +176,23 @@ app.get('/globe', (req, res) => {
   app.get('/profile', requireLogin, (req, res) => {
     res.render('profile', { user: req.session.user });
   });
-  
+
   app.post('/profile', requireLogin, async (req, res) => {
     const { name, email } = req.body;
-  
+
     try {
       const dbInstance = await connectDB();
       const users = dbInstance.collection('users');
-      
+
       await users.updateOne(
         { _id: new ObjectId(req.session.user._id) },
         { $set: { name, email } }
       );
-  
+
       // Update session with new info
       req.session.user.name = name;
       req.session.user.email = email;
-  
+
       res.redirect('/profile');
     } catch (err) {
       console.error('Profile update failed:', err);
