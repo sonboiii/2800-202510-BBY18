@@ -10,7 +10,6 @@ function normalizeName(name = '') {
 
 module.exports = function (db) {
     router.get('/', async (req, res) => {
-        console.log("→ [availableRecipes] GET /available-recipes route hit");
 
         if (!req.session.user) {
             console.warn("No user session found");

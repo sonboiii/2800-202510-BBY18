@@ -7,7 +7,6 @@ const session = require('express-session');
 const MongoStore = require('connect-mongo');
 const fetch = require('node-fetch');      // v2.x
 const { connectDB, uri: mongoUri } = require('./db');
-console.log("→ [availableRecipes] GET /available-recipes route hit");
 const { ObjectId } = require('mongodb');
 
 const app = express();
