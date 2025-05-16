@@ -3,7 +3,7 @@ const OpenAI = require('openai').default;
 
 const openai = new OpenAI({
   baseURL:  "https://openrouter.ai/api/v1",
-  apiKey:   process.env.OPENAI_API_KEY,
+  apiKey:   process.env.OPENAI_API_KEY_TWO,
   defaultHeaders: {
     "HTTP-Referer": process.env.SITE_URL || "",
     "X-Title":      process.env.SITE_TITLE || ""
