@@ -51,7 +51,7 @@ h2 {
 #spinBtn, #viewRecipeBtn {
     background-color: rgba(76, 175, 80, 0.8);
     color: white;
-    padding: 12px 25px;
+    padding: 8px 16px;
     border: none;
     border-radius: 5px;
     cursor: pointer;

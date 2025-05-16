@@ -1,4 +1,14 @@
 const express = require('express');
+const OpenAI = require('openai').default;
+
+const openai = new OpenAI({
+  baseURL:  "https://openrouter.ai/api/v1",
+  apiKey:   process.env.OPENAI_API_KEY,
+  defaultHeaders: {
+    "HTTP-Referer": process.env.SITE_URL || "",
+    "X-Title":      process.env.SITE_TITLE || ""
+  },
+});
 
 module.exports = function (db) {
     const router = express.Router();
@@ -32,6 +42,37 @@ module.exports = function (db) {
         });
         } catch (err) {
             next(err);
+        }
+    });
+
+    router.get('/:area/description', async (req, res) => {
+        if (!req.session.user) return res.status(401).json({ error: 'Unauthorized' });
+
+        const area = req.params.area;
+
+        try {
+            const prompt = `Describe ${area} cuisine in one appetizing sentence. Use **no more than 20 words** and complete the thought clearly. Omit specific dish examples.`;
+
+            const aiResponse = await openai.chat.completions.create({
+                model: "qwen/qwen3-8b:free",
+                messages: [
+                    { role: "system", content: "You are a helpful culinary assistant who writes enticing cuisine summaries." },
+                    { role: "user", content: prompt }
+                ],
+                temperature: 0.7,
+                max_tokens: 400
+            });
+
+            console.log('AI raw response:', JSON.stringify(aiResponse, null, 2));  // log full response for debugging
+            const raw = aiResponse.choices?.[0]?.message?.content?.trim();
+            const description = raw && raw.length > 0 ? raw : "No Description Found.";
+
+            console.log(description);
+            res.json({ area, description });
+
+        } catch (err) {
+            console.error('AI request failed:', err);
+            res.status(500).json({ error: 'AI description generation failed.' });
         }
     });
 

@@ -169,8 +169,8 @@ function spinGlobe() {
         .pointAltitude(0.01)
         .pointRadius(0.5);
 
-    // Spin duration of 2 seconds
-    spinDuration = 2000;
+    // Spin duration of 3 seconds
+    spinDuration = 3000;
     startTime = Date.now();
 
     // Start spinning animation with continuous motion
@@ -261,20 +261,26 @@ function easeOutCubic(t) {
 }
 
 function finishSpin() {
-    // Show result and reset controls
+    // Show result container
     result.classList.add('show');
+
+    // Show the region name immediately
     regionName.textContent = displayNameOverrides[selectedRegion.name] || selectedRegion.name;
-    regionInfo.textContent = selectedRegion.info;
 
-    // Highlight the chosen region with a red pointer (larger red marker)
+    // Show loading text until description arrives
+    regionInfo.textContent = "Loading description...";
+
+    // Disable spin button until description is ready
+    spinBtn.disabled = true;
+
+    // Highlight selected region with bigger red pointer
     globe.pointsData(window.regions)
-        .pointColor((point) => point.name === selectedRegion.name ? '#ff6b6b' : '#4CAF50') // Red for selected region
-        .pointAltitude((point) => point.name === selectedRegion.name ? 0.1 : 0.01)
-        .pointRadius((point) => point.name === selectedRegion.name ? 1.0 : 0.5); // Larger marker for selected region
+    .pointColor(point => point.name === selectedRegion.name ? '#ff6b6b' : '#4CAF50')
+    .pointAltitude(point => point.name === selectedRegion.name ? 0.1 : 0.01)
+    .pointRadius(point => point.name === selectedRegion.name ? 1.0 : 0.5);
 
+    // Setup view recipe button click
     const viewRecipeBtn = document.getElementById('viewRecipeBtn');
-
-    console.log(selectedRegion.name);
 
     if (viewRecipeBtn) {
         viewRecipeBtn.onclick = () => {
@@ -282,9 +288,23 @@ function finishSpin() {
         };
     }
 
-    // Enable spin button again after some time
-    setTimeout(() => {
+    // Fetch AI-generated description
+    fetch(`/areas/${encodeURIComponent(selectedRegion.name)}/description`)
+    .then(res => res.json())
+    .then(data => {
+        if (data.description) {
+        regionInfo.textContent = data.description;
+        } else {
+        regionInfo.textContent = "No description available.";
+        }
+    })
+    .catch(err => {
+        console.error('Failed to load description:', err);
+        regionInfo.textContent = "No description available.";
+    })
+    .finally(() => {
+        // Re-enable spin button and reset isSpinning flag
         spinBtn.disabled = false;
         isSpinning = false;
-    }, 500);
+    });
 }
