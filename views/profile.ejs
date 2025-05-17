@@ -1,8 +1,15 @@
 <%- include('templates/header', { title: 'Your Profile' }) %>
 
-
 <div class="w-50 mx-auto shadow rounded p-4 bg-white">
-    <h1 class="mb-4 text-center">Your Profile</h1>
+  <h1 class="mb-4 text-center">Your Profile</h1>
+
+  <div class="card text-center mb-4 shadow-sm border-info">
+    <div class="card-body">
+      <h5 class="card-title">Favourite Recipes</h5>
+      <p class="card-text display-6 fw-bold text-primary"><%= favCount %></p>
+    </div>
+  </div>
+
   <form action="/profile" method="POST">
     <div class="mb-3">
       <label for="name" class="form-label">Name</label>
@@ -13,7 +20,58 @@
       <input type="email" id="email" name="email" value="<%= user.email %>" class="form-control" required>
     </div>
     <button type="submit" class="btn btn-primary fancy-hover">Save Changes</button>
+    <button type="button" class="btn btn-warning ms-2 fancy-hover" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+      Change Password
+    </button>
   </form>
+
+  <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <form action="/change-password" method="POST" class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <% if (formError) { %>
+            <div class="alert alert-danger"><%= formError %></div>
+          <% } %>
+          <% if (formSuccess) { %>
+            <div class="alert alert-success"><%= formSuccess %></div>
+          <% } %>
+  
+          <div class="mb-3">
+            <label for="currentPassword" class="form-label">Current Password</label>
+            <input type="password" name="currentPassword" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="newPassword" class="form-label">New Password</label>
+            <input type="password" name="newPassword" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+            <input type="password" name="confirmPassword" class="form-control" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Password</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
+
+<script>
+  <% if (formError || formSuccess) { %>
+    const changePasswordModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
+    changePasswordModal.show();
+  <% } %>
+
+  const modalEl = document.getElementById('changePasswordModal');
+  modalEl.addEventListener('hidden.bs.modal', function () {
+    modalEl.querySelector('form').reset();
+  });
+</script>
 
 <%- include('templates/footer') %>
