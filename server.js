@@ -40,8 +40,13 @@ app.use(session({
 
 app.use((req, res, next) => {
   res.locals.user = req.session.user || undefined;
+  res.locals.formError = req.session.formError;
+  res.locals.formSuccess = req.session.formSuccess;
+  delete req.session.formError;
+  delete req.session.formSuccess;
   next();
 });
+
 
 // Misc Routers
 const foodfactRouter = require('./routes/foodfact')();
@@ -56,22 +61,23 @@ connectDB().then(db => {
   const areasRouter = require('./routes/areas')(db);
   const availableRecipesRoutes = require('./routes/availableRecipes')(db);
   const favouritesRouter = require('./routes/favourites')(db);
+  const profileRouter = require('./routes/profile')(db);
+  const authRoutes = require('./routes/authRoutes')(db);
 
 
-app.use(auth.router);
-app.use('/pantry', pantryRouter);
-app.use('/ingredients', ingredientsRouter);
-app.use('/areas', areasRouter);
-app.use('/available-recipes', availableRecipesRoutes);
-app.use('/favourites', favouritesRouter);
+
+  app.use(auth.router);
+  app.use('/profile', profileRouter);
+  app.use('/pantry', pantryRouter);
+  app.use('/ingredients', ingredientsRouter);
+  app.use('/areas', areasRouter);
+  app.use('/available-recipes', availableRecipesRoutes);
+  app.use('/favourites', favouritesRouter);
+  app.use(authRoutes);
 
   /* Routes Section */
   app.get('/', (req, res) => {
     res.render('index', { title: 'Home' });
-  });
-
-  app.get('/login', (req, res) => {
-    res.render('login', { title: 'Login' });
   });
 
   app.get('/about', (req, res) => {
@@ -82,35 +88,21 @@ app.use('/favourites', favouritesRouter);
     res.render('home', { user: req.session.user });
   });
 
-  app.get('/signup', (req, res) => {
-    res.render('signup', { title: 'Sign Up' });
-  });
 
-  app.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.log('Logout error:', err);
-        return res.send('Error logging out');
+  app.use(session({
+    secret: process.env.NODE_SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: mongoUri,
+      crypto: {
+        secret: process.env.MONGODB_SESSION_SECRET
       }
-      res.clearCookie('connect.sid');
-      res.redirect('/');
-    });
-  });
-
-app.use(session({
-  secret: process.env.NODE_SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: mongoUri,
-    crypto: {
-      secret: process.env.MONGODB_SESSION_SECRET
+    }),
+    cookie: {
+      maxAge: (60 * 60 * 1000) * 2,
     }
-  }),
-  cookie: {
-    maxAge: (60 * 60 * 1000) * 2,
-  }
-}));
+  }));
 
 
   app.get('/stores', async (req, res, next) => {
@@ -186,35 +178,8 @@ app.use(session({
 
 
 
-app.get('/globe', (req, res) => {
-  res.render('globe');
-});
-
-  app.get('/profile', requireLogin, (req, res) => {
-    res.render('profile', { user: req.session.user });
-  });
-
-  app.post('/profile', requireLogin, async (req, res) => {
-    const { name, email } = req.body;
-
-    try {
-      const dbInstance = await connectDB();
-      const users = dbInstance.collection('users');
-
-      await users.updateOne(
-        { _id: new ObjectId(req.session.user._id) },
-        { $set: { name, email } }
-      );
-
-      // Update session with new info
-      req.session.user.name = name;
-      req.session.user.email = email;
-
-      res.redirect('/profile');
-    } catch (err) {
-      console.error('Profile update failed:', err);
-      res.status(500).send('Error updating profile');
-    }
+  app.get('/globe', (req, res) => {
+    res.render('globe');
   });
 
 
