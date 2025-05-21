@@ -4,8 +4,8 @@
   <h1 class="text-center text-orange">Welcome to Foodie</h1>
   <p class="text-center text-orange">Find your next favorite meal, wherever you are.</p>
 
-  <!-- Three.js donut animation -->
-  <div id="three-container"></div>
+  <!-- Burger animation -->
+  <div id="three-container" style="width: 300px; height: 300px; margin: 0 auto;"></div>
 
   <!-- Button -->
   <div class="text-center mt-3">
@@ -14,5 +14,44 @@
 
 
 </main>
+
+<!-- Load burger animation using ES module -->
+<script type="module">
+  import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.module.js';
+  import { GLTFLoader } from 'https://cdn.jsdelivr.net/npm/three@0.152.2/examples/jsm/loaders/GLTFLoader.js';
+
+  const container = document.getElementById('three-container');
+
+  if (!container) {
+    console.warn('three-container not found');
+  } else {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 1000);
+    camera.position.z = 3;
+
+    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+    renderer.setSize(container.clientWidth, container.clientHeight);
+    container.appendChild(renderer.domElement);
+
+    const light = new THREE.HemisphereLight(0xffffff, 0x444444, 1.2);
+    scene.add(light);
+
+    const loader = new GLTFLoader();
+    loader.load('/html/burger.glb', gltf => {
+      const model = gltf.scene;
+      model.scale.set(1.2, 1.2, 1.2);
+      scene.add(model);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        model.rotation.y += 0.01;
+        renderer.render(scene, camera);
+      }
+      animate();
+    }, undefined, error => {
+      console.error('Failed to load burger model:', error);
+    });
+  }
+</script>
 
 <%- include("templates/footer") %>

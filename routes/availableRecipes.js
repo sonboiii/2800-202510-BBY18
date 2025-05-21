@@ -71,6 +71,7 @@ module.exports = function (db) {
         }
     });
 
+
     router.get('/recipe/:id', async (req, res) => {
         if (!req.session.user) return res.redirect('/login');
 
@@ -111,6 +112,26 @@ module.exports = function (db) {
             console.error('Error loading recipe detail:', err);
             res.status(500).send('Failed to load recipe.');
         }
+    });
+
+    router.post('/ingredient-list', async (req, res) => {
+        const included = req.body.include || [];
+        const total = parseInt(req.body.total, 10);
+
+        const selectedIngredients = [];
+
+        for (let i = 0; i < total; i++) {
+            if (included.includes(i.toString())) {
+                const name = req.body[`name_${i}`];
+                const measure = req.body[`measure_${i}`];
+                selectedIngredients.push({ name, measure });
+            }
+        }
+
+        // Store in session temporarily
+        req.session.shoppingList = selectedIngredients;
+
+        return res.redirect('/stores');
     });
 
     return router;
