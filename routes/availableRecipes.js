@@ -43,7 +43,6 @@ module.exports = function (db) {
       let matchedMeals = baseMatchedMeals;
 
       if (matchedMeals.length === 0) {
-        console.log("No matched meals found in DB. Falling back to MealDB API.");
         const { data } = await axios.get('https://www.themealdb.com/api/json/v1/1/search.php?f=c');
         const apiMeals = data.meals || [];
 
@@ -74,9 +73,18 @@ module.exports = function (db) {
         matchedMeals = matchedMeals.filter(m => m.area === area);
       }
 
+      const favouriteCounts = await db.collection('favourites').aggregate([
+        { $group: { _id: "$mealId", count: { $sum: 1 } } }
+      ]).toArray();
+      const countMap = {};
+      favouriteCounts.forEach(fav => {
+        countMap[String(fav._id)] = fav.count;
+      });
+
       const mealsWithStatus = matchedMeals.map(meal => ({
         ...meal,
-        ingredientStatus: countMatchedIngredients(meal, pantryNames)
+        ingredientStatus: countMatchedIngredients(meal, pantryNames),
+        favouriteCount: countMap[String(meal._id)] || 0
       }));
 
       const categories = [...new Set(baseMatchedMeals.map(m => m.category).filter(Boolean))].sort();

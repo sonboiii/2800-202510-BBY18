@@ -48,9 +48,18 @@ module.exports = function (db) {
 
       const pantryItems = await db.collection('pantryItems').find({ userId: user._id }).toArray();
       const pantryNames = pantryItems.map(item => normalizeName(item.name));
+
+      const allFavouriteEntries = await db.collection('favourites').find().toArray();
+      const countMap = {};
+      allFavouriteEntries.forEach(entry => {
+        const key = String(entry.mealId);
+        countMap[key] = (countMap[key] || 0) + 1;
+      });
+
       const favouritesWithStatus = allFavourites.map(meal => ({
         ...meal,
-        ingredientStatus: countMatchedIngredients(meal, pantryNames)
+        ingredientStatus: countMatchedIngredients(meal, pantryNames),
+        favouriteCount: countMap[String(meal._id)] || 0
       }));
 
       const categories = [...new Set(allFavourites.map(m => m.category).filter(Boolean))].sort();
@@ -60,7 +69,7 @@ module.exports = function (db) {
       if (area) filteredMeals = filteredMeals.filter(m => m.area === area);
 
       res.render('favourites', {
-        meals: filteredMeals,
+        meals: filteredMeals, 
         categories,
         areas,
         category: category || '',
@@ -72,6 +81,59 @@ module.exports = function (db) {
       next(err);
     }
   });
+
+  // Add a meal to favourites
+router.post('/:id', async (req, res, next) => {
+  try {
+    const user = req.session.user;
+    const mealId = req.params.id;
+
+    if (!user) return res.status(401).redirect('/login');
+    if (!mealId) return res.status(400).send("Meal ID required.");
+
+    // Prevent duplicates
+    const existing = await db.collection('favourites').findOne({
+      userId: user._id,
+      mealId
+    });
+
+    if (!existing) {
+      await db.collection('favourites').insertOne({
+        userId: user._id,
+        mealId
+      });
+    }
+
+    const redirectUrl = req.get('Referer') || '/available-recipes';
+    res.redirect(redirectUrl);
+  } catch (err) {
+    next(err);
+  }
+});
+
+
+  // Remove a meal from favourites
+  router.post('/remove/:id', async (req, res, next) => {
+    try {
+      const user = req.session.user;
+      const mealId = req.params.id;
+
+      if (!user) return res.status(401).redirect('/login');
+      if (!mealId) return res.status(400).send("Meal ID required.");
+
+      await db.collection('favourites').deleteOne({
+        userId: user._id,
+        mealId: mealId
+      });
+
+      const redirectUrl = req.get('Referer') || '/favourites';
+      res.redirect(redirectUrl);
+
+    } catch (err) {
+      next(err);
+    }
+  });
+
 
   return router;
 };

@@ -55,15 +55,24 @@ module.exports = function (db) {
 
             const pantryItems = await db.collection('pantryItems').find({ userId }).toArray();
             const pantryNames = pantryItems.map(item => normalizeName(item.name));
+            const counts = await db.collection('favourites').aggregate([
+                { $match: { mealId: { $in: meals.map(m => String(m._id)) } } },
+                { $group: { _id: "$mealId", count: { $sum: 1 } } }
+            ]).toArray();
+
+            const countMap = Object.fromEntries(counts.map(c => [c._id, c.count]));
             const mealsWithStatus = meals.map(meal => ({
                 ...meal,
-                ingredientStatus: countMatchedIngredients(meal, pantryNames)
+                ingredientStatus: countMatchedIngredients(meal, pantryNames),
+                favouriteCount: countMap[String(meal._id)] || 0,
             }));
 
             res.render('availableRecipes', {
                 meals: mealsWithStatus,
                 favouriteMealIds,
-                user: req.session.user
+                area: areaName, 
+                user: req.session.user,
+                request: req
             });
         } catch (err) {
             next(err);
