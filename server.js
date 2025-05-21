@@ -101,12 +101,29 @@ connectDB().then(db => {
         });
       }
 
+      // Get grocery list from session
+      const groceryList = req.session.groceryList || [];
+
+      // Normalize names
+      const names = groceryList.map(i => i.name.toLowerCase());
+
+      // Load or query tags
+      const ingredientTags = require('./data/ingredient-tags.json'); // or from Mongo
+      const storeTags = new Set();
+
+      names.forEach(name => {
+        const tags = ingredientTags[name] || [];
+        tags.forEach(tag => storeTags.add(tag));
+      });
+
       // 2️⃣ POI lookup (Overpass) using the precise coords
+      const tagsToQuery = Array.from(storeTags).join('|') || 'supermarket|grocery';
+
       const overpassQuery = `
       [out:json][timeout:10];
-      node["shop"~"supermarket|grocery"](around:1000,${lat},${lon});
+      node["shop"~"${tagsToQuery}"](around:25000,${lat},${lon});
       out center;
-    `;
+      `;
       const poiUrl = 'https://overpass-api.de/api/interpreter?data='
         + encodeURIComponent(overpassQuery);
       const poiResp = await fetch(poiUrl);
