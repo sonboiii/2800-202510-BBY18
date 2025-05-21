@@ -136,13 +136,21 @@ module.exports = function (db) {
       }
 
       const userId = req.session.user._id;
+      const normalizeName = name => stemmer.stem(name.toLowerCase().trim());
+
       const pantryItems = await db.collection('pantryItems').find({ userId }).toArray();
       const pantryNames = pantryItems.map(i => normalizeName(i.name));
+
+      meal.ingredients = meal.ingredients.map(ing => ({
+        ...ing,
+        normalizedName: normalizeName(ing.name)
+      }));
 
       res.render('seemore', {
         meal,
         pantryNames
       });
+
 
     } catch (err) {
       console.error('Error loading recipe detail:', err);

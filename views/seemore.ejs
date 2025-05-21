@@ -18,10 +18,10 @@
 
         <h4>Ingredients</h4>
         <ul class="list-group mb-4">
-            <% meal.ingredients.forEach((ing, idx) => {
-                const normalizedName = ing.name?.toLowerCase().trim();
-                const inPantry = pantryNames?.includes(normalizedName);
+           <% meal.ingredients.forEach((ing, idx) => {
+            const inPantry = pantryNames?.includes(ing.normalizedName);
             %>
+
                 <li class="list-group-item d-flex align-items-center justify-content-between">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="include[]" value="<%= idx %>" checked id="check_<%= idx %>">
