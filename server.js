@@ -19,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set('trust proxy', true);
 
+// Middleware to restrict access to authenticated users
 function requireLogin(req, res, next) {
   if (!req.session.user) {
     return res.redirect('/login');
@@ -26,6 +27,7 @@ function requireLogin(req, res, next) {
   next();
 }
 
+// Configure session handling with MongoDB store
 app.use(session({
   secret: process.env.NODE_SESSION_SECRET,
   resave: false,
@@ -35,10 +37,16 @@ app.use(session({
   })
 }));
 
+// Set global template variables and handle flash messages
 app.use((req, res, next) => {
   res.locals.user = req.session.user || undefined;
+  res.locals.formError = req.session.formError;
+  res.locals.formSuccess = req.session.formSuccess;
+  delete req.session.formError;
+  delete req.session.formSuccess;
   next();
 });
+
 
 // Misc Routers
 const foodfactRouter = require('./routes/foodfact')();
@@ -53,22 +61,23 @@ connectDB().then(db => {
   const areasRouter = require('./routes/areas')(db);
   const availableRecipesRoutes = require('./routes/availableRecipes')(db);
   const favouritesRouter = require('./routes/favourites')(db);
+  const profileRouter = require('./routes/profile')(db);
+  const authRoutes = require('./routes/authRoutes')(db);
 
 
-app.use(auth.router);
-app.use('/pantry', pantryRouter);
-app.use('/ingredients', ingredientsRouter);
-app.use('/areas', areasRouter);
-app.use('/available-recipes', availableRecipesRoutes);
-app.use('/favourites', favouritesRouter);
+  // Mount routes
+  app.use(auth.router);
+  app.use('/profile', profileRouter);
+  app.use('/pantry', pantryRouter);
+  app.use('/ingredients', ingredientsRouter);
+  app.use('/areas', areasRouter);
+  app.use('/available-recipes', availableRecipesRoutes);
+  app.use('/favourites', favouritesRouter);
+  app.use(authRoutes);
 
   /* Routes Section */
   app.get('/', (req, res) => {
     res.render('index', { title: 'Home' });
-  });
-
-  app.get('/login', (req, res) => {
-    res.render('login', { title: 'Login' });
   });
 
   app.get('/about', (req, res) => {
@@ -78,23 +87,7 @@ app.use('/favourites', favouritesRouter);
   app.get('/home', requireLogin, (req, res) => {
     res.render('home', { user: req.session.user });
   });
-
-  app.get('/signup', (req, res) => {
-    res.render('signup', { title: 'Sign Up' });
-  });
-
-  app.get('/logout', (req, res) => {
-    req.session.destroy((err) => {
-      if (err) {
-        console.log('Logout error:', err);
-        return res.send('Error logging out');
-      }
-      res.clearCookie('connect.sid');
-      res.redirect('/');
-    });
-  });
-
-
+  
   app.get('/stores', async (req, res, next) => {
     try {
       // 1️⃣ Must have lat & lon from client (e.g. Leaflet.map.locate)
@@ -111,12 +104,29 @@ app.use('/favourites', favouritesRouter);
         });
       }
 
+      // Get grocery list from session
+      const groceryList = req.session.groceryList || [];
+
+      // Normalize names
+      const names = groceryList.map(i => i.name.toLowerCase());
+
+      // Load or query tags
+      const ingredientTags = require('./data/ingredient-tags.json'); // or from Mongo
+      const storeTags = new Set();
+
+      names.forEach(name => {
+        const tags = ingredientTags[name] || [];
+        tags.forEach(tag => storeTags.add(tag));
+      });
+
       // 2️⃣ POI lookup (Overpass) using the precise coords
+      const tagsToQuery = Array.from(storeTags).join('|') || 'supermarket|grocery';
+
       const overpassQuery = `
       [out:json][timeout:10];
-      node["shop"~"supermarket|grocery"](around:1000,${lat},${lon});
+      node["shop"~"${tagsToQuery}"](around:25000,${lat},${lon});
       out center;
-    `;
+      `;
       const poiUrl = 'https://overpass-api.de/api/interpreter?data='
         + encodeURIComponent(overpassQuery);
       const poiResp = await fetch(poiUrl);
@@ -166,43 +176,11 @@ app.use('/favourites', favouritesRouter);
     }
   });
 
-
-
-app.get('/globe', requireLogin, (req, res) => {
-  res.render('globe');
-});
-
-  app.get('/profile', requireLogin, (req, res) => {
-    res.render('profile', { user: req.session.user });
+  app.get('/globe', requireLogin, (req, res) => {
+    res.render('globe');
   });
 
-  app.post('/profile', requireLogin, async (req, res) => {
-    const { name, email } = req.body;
-
-    try {
-      const dbInstance = await connectDB();
-      const users = dbInstance.collection('users');
-
-      await users.updateOne(
-        { _id: new ObjectId(req.session.user._id) },
-        { $set: { name, email } }
-      );
-
-      // Update session with new info
-      req.session.user.name = name;
-      req.session.user.email = email;
-
-      res.redirect('/profile');
-    } catch (err) {
-      console.error('Profile update failed:', err);
-      res.status(500).send('Error updating profile');
-    }
-  });
-
-
-  /* END Route Section */
-
-
+  // 404 handler
   app.use(function (req, res) {
     res.status(404);
     res.render('404', { title: 'Page Not Found' });

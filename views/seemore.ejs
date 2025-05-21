@@ -13,19 +13,71 @@
     <h4 class="mt-4">Instructions</h4>
     <p style="white-space: pre-line;"><%= meal.instructions %></p>
 
-    <h4 class="mt-4">Ingredients</h4>
-    <ul class="list-group">
-        <% meal.ingredients.forEach(ing => { %>
-            <li class="list-group-item d-flex justify-content-between align-items-center">
-                <%= ing.name %>
-                <% if (ing.measure) { %>
-                    <span class="badge bg-secondary"><%= ing.measure %></span>
-                <% } %>
-            </li>
-        <% }) %>
-    </ul>
+    <form id="ingredient-form" action="/profile/grocery-list" method="POST">
+        <input type="hidden" name="items" id="grocery-json">
 
-    <a href="/available-recipes" class="btn btn-outline-secondary mt-4">Back to Recipes</a>
+        <h4>Ingredients</h4>
+        <ul class="list-group mb-4">
+           <% meal.ingredients.forEach((ing, idx) => {
+            const inPantry = pantryNames?.includes(ing.normalizedName);
+            %>
+
+                <li class="list-group-item d-flex align-items-center justify-content-between">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="include[]" value="<%= idx %>" checked id="check_<%= idx %>">
+                        <label class="form-check-label" for="check_<%= idx %>">
+                            <%= ing.name %>
+                            <% if (inPantry) { %>
+                                <span class="text-success small">– in pantry</span>
+                            <% } %>
+                        </label>
+                    </div>
+                    <input type="text" name="measure_<%= idx %>" value="<%= ing.measure || '' %>" class="form-control form-control-sm w-50 ms-2" />
+                    <input type="hidden" name="name_<%= idx %>" value="<%= ing.name %>">
+                </li>
+            <% }) %>
+        </ul>
+
+        <button type="submit" class="btn btn-success">Add to Grocery List</button>
+    </form>
+
+    <script>
+        const form = document.getElementById('ingredient-form');
+        const total = <%= meal.ingredients.length %>;
+
+        for (let i = 0; i < total; i++) {
+            const checkbox = form.querySelector(`[name="include[]"][value="${i}"]`);
+            const measureInput = form.querySelector(`[name="measure_${i}"]`);
+
+            const toggle = () => {
+                measureInput.disabled = !checkbox.checked;
+            };
+
+            checkbox.addEventListener('change', toggle);
+            toggle(); 
+        }
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const items = [];
+            for (let i = 0; i < total; i++) {
+                const include = form.querySelector(`[name="include[]"][value="${i}"]`);
+                if (include && include.checked) {
+                    const name = form.querySelector(`[name="name_${i}"]`)?.value;
+                    const measure = form.querySelector(`[name="measure_${i}"]`)?.value;
+                    if (name) items.push({ name, measure });
+                }
+            }
+
+            document.getElementById('grocery-json').value = JSON.stringify(items);
+            form.submit();
+        });
+    </script>
+
+    <button onclick="history.back()" class="btn btn-outline-secondary mt-4">
+        Go Back to Previous Page
+    </button>
 </div>
 
 <%- include('templates/footer') %>

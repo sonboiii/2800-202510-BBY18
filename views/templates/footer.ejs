@@ -15,58 +15,5 @@
     <% }) %>
 <% } %>
 
-<!-- Donut (Burger) animation using modules -->
-<script type="module">
-    import * as THREE from 'https://unpkg.com/three@0.158.0/build/three.module.js';
-    import { GLTFLoader } from 'https://unpkg.com/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
-
-    (async () => {
-        const container = document.getElementById('three-container');
-        if (!container) {
-            console.warn('three-container not found.');
-            return;
-        }
-
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer({ alpha: true });
-        renderer.setSize(200, 200);
-        container.appendChild(renderer.domElement);
-
-        const pointLight = new THREE.PointLight(0xffffff, 1.2);
-        pointLight.position.set(5, 5, 5);
-        scene.add(pointLight);
-
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-        scene.add(ambientLight);
-
-        camera.position.z = 10;
-
-        let burger;
-        const loader = new GLTFLoader();
-
-        loader.load('/html/burger.glb', (gltf) => {
-            burger = gltf.scene;
-            burger.scale.set(5, 5, 5);
-            burger.position.set(0, 0, 0);
-            burger.rotation.set(0, 0, 0);
-            scene.add(burger);
-            console.log('Burger model loaded:', gltf);
-        }, undefined, (error) => {
-            console.error('Error loading burger model:', error);
-        });
-
-        function animate() {
-            requestAnimationFrame(animate);
-            if (burger) {
-                burger.rotation.y += 0.01;
-            }
-            renderer.render(scene, camera);
-        }
-
-        animate();
-    })();
-</script>
-
 </body>
 </html>

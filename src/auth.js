@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const bcrypt = require('bcrypt');
 const Joi = require('joi');
+const { ObjectId } = require('mongodb');
 
 module.exports = function (db) {
   const router = express.Router();
@@ -92,6 +93,44 @@ module.exports = function (db) {
     });
   });
 
+  router.post('/change-password', requireLogin, async (req, res) => {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+  
+    const schema = Joi.object({
+      currentPassword: Joi.string().required(),
+      newPassword: Joi.string().min(6).required(),
+      confirmPassword: Joi.string().valid(Joi.ref('newPassword')).required()
+    });
+  
+    const { error } = schema.validate(req.body);
+    if (error) {
+      req.session.formError = error.details[0].message;
+      return res.redirect('/profile');
+    }
+  
+    try {
+      const users = db.collection('users');
+      const user = await users.findOne({ _id: new ObjectId(req.session.user._id) });
+  
+      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!passwordMatch) {
+        req.session.formError = 'Current password is incorrect';
+        return res.redirect('/profile');
+      }
+  
+      const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+      await users.updateOne({ _id: user._id }, { $set: { password: hashedNewPassword } });
+  
+      req.session.formSuccess = 'Password updated successfully';
+      res.redirect('/profile');
+    } catch (err) {
+      console.error('Password change error:', err.stack || err);
+      req.session.formError = 'Internal error while changing password';
+      res.redirect('/profile');
+    }
+  });
+  
+  
   return {
     router,
     requireLogin
