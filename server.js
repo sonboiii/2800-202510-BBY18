@@ -168,7 +168,7 @@ app.use('/favourites', favouritesRouter);
 
 
 
-app.get('/globe', (req, res) => {
+app.get('/globe', requireLogin, (req, res) => {
   res.render('globe');
 });
 

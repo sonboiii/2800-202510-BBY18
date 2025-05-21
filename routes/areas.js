@@ -60,9 +60,9 @@ module.exports = function (db) {
                     { role: "user", content: prompt }
                 ],
                 temperature: 0.7,
-                max_tokens: 400
+                max_tokens: 800
             });
-            
+   
             const raw = aiResponse.choices?.[0]?.message?.content?.trim();
             const description = raw && raw.length > 0 ? raw : "No Description Found.";
 
