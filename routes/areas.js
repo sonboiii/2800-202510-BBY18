@@ -1,17 +1,34 @@
 const express = require('express');
 const OpenAI = require('openai').default;
+const router = express.Router();
+const natural = require('natural');
+const stemmer = natural.PorterStemmer;
+const { ObjectId } = require('mongodb');
+
+function normalizeName(name = '') {
+    return stemmer.stem(name.toLowerCase().trim());
+}
+
+function countMatchedIngredients(meal, pantryNames) {
+    const normalizedIngredients = meal.ingredients.map(ing => normalizeName(ing.name)).filter(Boolean);
+    const matchedCount = normalizedIngredients.filter(ing => pantryNames.includes(ing)).length;
+
+    return {
+        total: normalizedIngredients.length,
+        matched: matchedCount
+    };
+}
 
 const openai = new OpenAI({
-  baseURL:  "https://openrouter.ai/api/v1",
-  apiKey:   process.env.OPENAI_API_KEY_TWO,
-  defaultHeaders: {
-    "HTTP-Referer": process.env.SITE_URL || "",
-    "X-Title":      process.env.SITE_TITLE || ""
-  },
+    baseURL: "https://openrouter.ai/api/v1",
+    apiKey: process.env.OPENAI_API_KEY_TWO,
+    defaultHeaders: {
+        "HTTP-Referer": process.env.SITE_URL || "",
+        "X-Title": process.env.SITE_TITLE || ""
+    },
 });
 
 module.exports = function (db) {
-    const router = express.Router();
 
     // GET /meals/areas — return unique areas
     router.get('/', async (req, res, next) => {
@@ -35,11 +52,19 @@ module.exports = function (db) {
             const meals = await db.collection('meals').find({ area: areaName }).toArray();
             const favourites = await db.collection('favourites').find({ userId }).toArray();
             const favouriteMealIds = favourites.map(f => String(f.mealId));
+
+            const pantryItems = await db.collection('pantryItems').find({ userId }).toArray();
+            const pantryNames = pantryItems.map(item => normalizeName(item.name));
+            const mealsWithStatus = meals.map(meal => ({
+                ...meal,
+                ingredientStatus: countMatchedIngredients(meal, pantryNames)
+            }));
+
             res.render('availableRecipes', {
-            meals,
-            favouriteMealIds, 
-            user: req.session.user 
-        });
+                meals: mealsWithStatus,
+                favouriteMealIds,
+                user: req.session.user
+            });
         } catch (err) {
             next(err);
         }
@@ -62,7 +87,7 @@ module.exports = function (db) {
                 temperature: 0.7,
                 max_tokens: 400
             });
-            
+
             const raw = aiResponse.choices?.[0]?.message?.content?.trim();
             const description = raw && raw.length > 0 ? raw : "No Description Found.";
 

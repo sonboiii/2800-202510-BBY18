@@ -1,34 +1,106 @@
 <%- include('templates/header', { title: 'My Favourite Recipes' }) %>
 
-<div class="container py-5">
-  <h2 class="mb-4 text-center">My Favourite Recipes</h2>
-  <div class="row row-cols-1 row-cols-md-3 g-4">
+  <div class="container py-5">
+    <h2 class="mb-4 text-center">My Favourite Recipes</h2>
 
-    <% if (meals.length === 0) { %>
-      <p class="text-center">You do not have any favourites recipes yet. Try adding some!</p>
-    <% } %>
-
-    <% meals.forEach(meal => { %>
-      <div class="col">
-        <div class="card h-100">
-          <img src="<%= meal.thumbnail %>" class="card-img-top" alt="<%= meal.name %>">
-          <div class="card-body d-flex flex-column">
-            <h5 class="card-title"><%= meal.name %></h5>
-            <p><strong>Category:</strong> <%= meal.category %></p>
-            <p><strong>Origin:</strong> <%= meal.area %></p>
-            <a href="/available-recipes/recipe/<%= meal._id %>" class="btn btn-outline-primary mt-auto">
-              Full Instructions
-            </a>
-            <form action="/favourites/remove/<%= meal._id %>" method="POST" class="mt-2" onsubmit="return confirm('Are you sure you want to remove this recipe from your favourites?');">
-                <button class="btn btn-outline-secondary btn-sm w-100">Remove from Favourites</button>
-            </form>
-
-          </div>
+    <!-- Check if categories and areas are available -->
+    <% if (typeof categories !=='undefined' && typeof areas !=='undefined' ) { %>
+      <!-- FILTER -->
+      <form class="row mb-4" method="GET">
+        <div class="col-md-4">
+          <label for="category" class="form-label">Filter by Category:</label>
+          <select name="category" id="category" class="form-select">
+            <option value="">All</option>
+            <!-- Loop through each category to create options -->
+            <% categories.forEach(cat=> { %>
+              <option value="<%= cat %>" <%=cat===category ? 'selected' : '' %>><%= cat %>
+              </option>
+              <% }) %>
+                <!-- Mark as selected if matches current filter -->
+          </select>
         </div>
-      </div>
-    <% }) %>
 
+        <div class="col-md-4">
+          <label for="area" class="form-label">Filter by Origin:</label>
+          <select name="area" id="area" class="form-select">
+            <option value="">All</option>
+            <!-- Same loop but for areas/region -->
+            <% areas.forEach(a=> { %>
+              <option value="<%= a %>" <%=a===area ? 'selected' : '' %>><%= a %>
+              </option>
+              <% }) %>
+          </select>
+        </div>
+
+        <div class="col-md-2 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+          <!-- Reset filters -->
+          <a href="<%= request.originalUrl.split('?')[0] %>" class="btn btn-outline-secondary w-100">Reset Filters</a>
+        </div>
+
+      </form>
+      <% } %>
+        <!-- Show 'encouraging' message if no favourite recipes are found -->
+        <% if (meals.length===0) { %>
+          <p class="text-center">You do not have any favourite recipes yet. Try adding some!</p>
+          <% } %>
+
+            <div class="row row-cols-1 row-cols-md-3 g-4">
+              <!-- Loop through each meal to display its card -->
+              <% meals.forEach(meal=> { %>
+                <div class="col">
+                  <div class="card h-100">
+                    <img src="<%= meal.thumbnail %>" class="card-img-top" alt="<%= meal.name %>">
+                    <div class="card-body d-flex flex-column">
+                      <h5 class="card-title">
+                        <%= meal.name %>
+                      </h5>
+                      <!-- Get status for availability info -->
+                      <% const status=meal.ingredientStatus; %>
+                      <!-- First check if there are ingredients -->
+                        <% if (status?.total> 0) { %>
+                          <!-- If all ingredients matched, show ready message -->
+                          <% if (status.matched===status.total) { %>
+                            <div class="border border-success text-success rounded text-center small mb-2 px-2 py-1">
+                              Ready to make!
+                            </div>
+                            <!-- otherwise, show # missing ingredients -->
+                            <% } else { %>
+                              <div class="border border-danger text-danger rounded text-center small mb-2 px-2 py-1">
+                                Missing <%= status.total - status.matched %> of <%= status.total %> ingredients
+                              </div>
+                              <% } %>
+                                <% } %>
+
+
+                                  <p class="mb-1"><strong>Category:</strong>
+                                    <%= meal.category %>
+                                  </p>
+                                  <p class="mb-2"><strong>Origin:</strong>
+                                    <%= meal.area %>
+                                  </p>
+
+                                  <p class="card-text text-muted small mb-3" style="flex-grow: 1;">
+                                    <%= meal.instructions.slice(0, 140) %>...
+                                  </p>
+
+                                  <a href="/available-recipes/recipe/<%= meal._id %>"
+                                    class="btn btn-outline-primary mt-auto">
+                                    Full Instructions
+                                  </a>
+
+                                  <form action="/favourites/remove/<%= meal._id %>" method="POST" class="mt-2"
+                                    onsubmit="return confirm('Are you sure you want to remove this recipe from your favourites?');">
+                                    <button class="btn btn-outline-secondary btn-sm w-100">Remove from
+                                      Favourites</button>
+                                  </form>
+                    </div>
+                  </div>
+                </div>
+                <% }) %>
+            </div>
   </div>
-</div>
 
-<%- include('templates/footer') %>
+  <%- include('templates/footer') %>
