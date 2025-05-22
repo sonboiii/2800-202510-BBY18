@@ -1,16 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const natural = require('natural');
-const stemmer = natural.PorterStemmer;
+const stemmer = natural.PorterStemmer; // Source: Natural Language Processing library - https://www.npmjs.com/package/natural
 const axios = require('axios');
 const { ObjectId } = require('mongodb');
 
+// Used to normalize ingredient names by converting to lower case, trimming, and applying a "stemming" to reduce variations, such as pluralized items
 function normalizeName(name = '') {
   return stemmer.stem(name.toLowerCase().trim());
 }
 
+// Counts how many ingredients in the meal are matched with the user's pantry
 function countMatchedIngredients(meal, pantryNames) {
-  const normalizedIngredients = meal.ingredients.map(ing => normalizeName(ing.name)).filter(Boolean);
+  const normalizedIngredients = meal.ingredients.map(ing => normalizeName(ing.name)).filter(Boolean); // here's where the stemming normalizes names to match
   const matchedCount = normalizedIngredients.filter(ing => pantryNames.includes(ing)).length;
 
   return {
@@ -35,6 +37,7 @@ module.exports = function (db) {
 
       const allMeals = await db.collection('meals').find({}).toArray();
 
+      // filters meals with all ingredients in their pantry
       const baseMatchedMeals = allMeals.filter(meal => {
         const normalizedIngredients = meal.ingredients.map(ing => normalizeName(ing.name)).filter(Boolean);
         return normalizedIngredients.every(ing => pantryNames.includes(ing));
@@ -46,6 +49,7 @@ module.exports = function (db) {
         const { data } = await axios.get('https://www.themealdb.com/api/json/v1/1/search.php?f=c');
         const apiMeals = data.meals || [];
 
+        //map API data to meal objects
         matchedMeals = apiMeals.map(m => ({
           _id: m.idMeal,
           name: m.strMeal,
@@ -60,20 +64,20 @@ module.exports = function (db) {
           }).filter(Boolean)
         }));
 
+        // then filter meals by pantry
         matchedMeals = matchedMeals.filter(meal => {
           const normalizedIngredients = meal.ingredients.map(ing => normalizeName(ing.name)).filter(Boolean);
           return normalizedIngredients.every(ing => pantryNames.includes(ing));
         });
       }
-
       if (category) {
-        matchedMeals = matchedMeals.filter(m => m.category === category);
+        matchedMeals = matchedMeals.filter(m => m.category === category); // by category
       }
       if (area) {
-        matchedMeals = matchedMeals.filter(m => m.area === area);
+        matchedMeals = matchedMeals.filter(m => m.area === area); // or area
       }
 
-      const favouriteCounts = await db.collection('favourites').aggregate([
+      const favouriteCounts = await db.collection('favourites').aggregate([ // gets a count of global favourites
         { $group: { _id: "$mealId", count: { $sum: 1 } } }
       ]).toArray();
       const countMap = {};
@@ -81,6 +85,7 @@ module.exports = function (db) {
         countMap[String(fav._id)] = fav.count;
       });
 
+      // Combines the status information for the meals for rendering
       const mealsWithStatus = matchedMeals.map(meal => ({
         ...meal,
         ingredientStatus: countMatchedIngredients(meal, pantryNames),
@@ -167,10 +172,10 @@ module.exports = function (db) {
   });
 
   router.post('/ingredient-list', async (req, res) => {
-    const included = req.body.include || [];
+    const included = req.body.include || []; // selected ingredient indices
     const total = parseInt(req.body.total, 10);
     const selectedIngredients = [];
-
+    // collect selected ingredients
     for (let i = 0; i < total; i++) {
       if (included.includes(i.toString())) {
         const name = req.body[`name_${i}`];
@@ -178,7 +183,7 @@ module.exports = function (db) {
         selectedIngredients.push({ name, measure });
       }
     }
-
+    // save shopping list to session
     req.session.shoppingList = selectedIngredients;
     return res.redirect('/stores');
   });

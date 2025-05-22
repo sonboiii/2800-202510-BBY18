@@ -1,5 +1,4 @@
 // Basic Server Set up
-// Make sure you install required modules to test/run
 require('dotenv').config();
 const express = require('express');
 const path = require('path');

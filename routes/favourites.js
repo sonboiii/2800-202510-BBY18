@@ -25,10 +25,10 @@ module.exports = function (db) {
       if (!user) return res.status(401).redirect('/login');
 
       const { category, area } = req.query;
-      const favourites = await db.collection('favourites').find({ userId: user._id }).toArray();
-      const favouriteMealIds = favourites.map(f => f.mealId);
+      const favourites = await db.collection('favourites').find({ userId: user._id }).toArray(); //fetches the user's fav recipes
+      const favouriteMealIds = favourites.map(f => f.mealId); // extracts the meal ID
 
-      if (favouriteMealIds.length === 0) {
+      if (favouriteMealIds.length === 0) { // render empty view if no favourites
         return res.render('favourites', {
           meals: [],
           categories: [],
@@ -42,8 +42,8 @@ module.exports = function (db) {
         typeof id === 'string' && id.length === 24 ? new ObjectId(id) : id
       );
 
-      const allFavourites = await db.collection('meals').find({
-        _id: { $in: mealQueryIds }
+      const allFavourites = await db.collection('meals').find({ 
+        _id: { $in: mealQueryIds } // fetch favourite means from database by ID
       }).toArray();
 
       const pantryItems = await db.collection('pantryItems').find({ userId: user._id }).toArray();
@@ -53,7 +53,7 @@ module.exports = function (db) {
       const countMap = {};
       allFavouriteEntries.forEach(entry => {
         const key = String(entry.mealId);
-        countMap[key] = (countMap[key] || 0) + 1;
+        countMap[key] = (countMap[key] || 0) + 1; // counts how many users favourited a meal
       });
 
       const favouritesWithStatus = allFavourites.map(meal => ({
