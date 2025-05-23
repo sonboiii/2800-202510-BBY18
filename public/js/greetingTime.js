@@ -33,7 +33,7 @@ function updateTimeAndMessage() {
     mealMessage = "Lunchtime! Take a break and dig in 🍔";
   } else if (hour >= 16 && hour < 21) {
     mealMessage = "A perfect evening starts with a good meal 🌆"
-;
+      ;
   } else {
     mealMessage = "Late night snack, maybe? 🌙";
   }

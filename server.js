@@ -51,7 +51,7 @@ app.use((req, res, next) => {
 
 
 // Misc Routers
-const foodfactRouter = require('./routes/foodfact')();
+const foodfactRouter = require('./routes/foodFact')();
 app.use('/api/foodfact', foodfactRouter);
 
 
