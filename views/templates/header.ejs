@@ -51,11 +51,17 @@
               <a class="nav-link text-light btn btn-success fancy-hover" href="/profile">Profile</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link text-light btn btn-success fancy-hover" href="/about">About</a>
+            </li class="nav-item">
+            <li class="nav-item">
               <a class="nav-link text-light btn btn-outline-danger fancy-hover" href="/logout">Logout</a>
             </li class="nav-item">
 
             <!-- If no user is logged in, show login/signup options -->
             <% } else { %>
+              <li class="nav-item">
+                <a class="nav-link text-light btn btn-success fancy-hover" href="/about">About</a>
+              </li class="nav-item">
               <li class="nav-item">
                 <a class="nav-link text-light btn btn-success fancy-hover" href="/login">Login</a>
               </li>
