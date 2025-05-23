@@ -56,11 +56,75 @@ Foodie then generates a categorized shopping list based on the selected recipe, 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
+<!-- PROJECT STRUCTURE -->
+## Project Structure
+```
+├───public
+│   ├───css
+│   │   globe.css
+│   │   styles.css
+│   ├───images
+│   │   breadLogo.png
+│   │   favicon.ico
+│   │   favourite.svg
+│   │   food-fact.svg
+│   │   foodieBlack.png
+│   │   foodieCream.png
+│   │   foodieWhite.png
+│   │   foodie_index.png
+│   │   globe.svg
+│   │   ingredients.svg
+│   │   pantry.svg
+│   │   recipe.svg
+│   │   stores.svg
+│   └───js
+│       addPantry.js
+│       foodfact.js
+│       globe.js
+│       greetingTime.js
+│       location.js
+│       viewPantry.js
+├───routes
+│   areas.js
+│   authRoutes.js
+│   availableRecipes.js
+│   favourites.js
+│   foodfact.js
+│   ingredients.js
+│   pantry.js
+│   profile.js
+├───src
+│   auth.js
+└───views
+    404.ejs
+    about.ejs
+    addPantry.ejs
+    availableRecipes.ejs
+    favourites.ejs
+    globe.ejs
+    home.ejs
+    index.ejs
+    ingredients.ejs
+    login.ejs
+    meal.ejs
+    pantry.ejs
+    profile.ejs
+    recipeDetail.ejs
+    seemore.ejs
+    signup.ejs
+    stores.ejs
+    └───templates
+        footer.ejs
+        header.ejs
+```
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 <!-- GETTING STARTED -->
 ## Getting Started
 
-Clone the repo and install dependency.
+Clone the repo, install dependencies and create your `.env` file.
 
 ### Prerequisites
 
@@ -78,34 +142,95 @@ This is an example of how to list things you need to use the software and how to
 
 ### Installation
 
-1. Get a free API Key at weatherAPI and openrouter.
+1. Get free API keys from:
+   - [WeatherAPI](https://www.weatherapi.com/)
+   - [OpenRouter](https://openrouter.ai/)
+   - [OpenAI](https://platform.openai.com/)
 
-2. Enter your API in `.env`
-   ```js
-   API_KEY = 'ENTER YOUR API';
+2. Create a `.env` file in your project root and add your environment variables:
+   ```env
+   MONGODB_USER=your_mongodb_user
+   MONGODB_PASSWORD=your_mongodb_password
+   MONGODB_HOST=your_mongodb_host
+   MONGODB_DATABASE=your_database_name
+   NODE_SESSION_SECRET=your_session_secret
+   WEATHER_API_KEY=your_weatherapi_key
+   OPENROUTER_API_KEY=your_openrouter_api_key
+   OPENROUTER_API_KEY_TWO=your_secondary_openrouter_api_key
+   OPENAI_API_KEY=your_openai_api_key
+   OPENAI_API_KEY_TWO=your_secondary_openai_api_key
+   SITE_URL=localhost
+   SITE_TITLE=Foodie
    ```
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+
+<!-- Features -->
+## Features
+
+- **Pantry**  
+  Manage your pantry items easily — add, update, or remove ingredients you have on hand.
+
+- **Stores**  
+  Find specialty grocery stores and supermarkets nearby based on your location.
+
+- **Globe**  
+  Explore global cuisines interactively by spinning a globe and discovering new recipes.
+
+- **Pantry Recipes**  
+  Get recipe suggestions based on what’s currently in your pantry.
+
+- **Food Fact**  
+  Discover fun and interesting food trivia powered by AI to enhance your cooking experience.
+
+- **Ingredient Search**  
+  Search recipes by entering specific ingredients you want to use.
+
+- **Favourites**  
+  Save and access your favorite recipes quickly for easy reference.
+
+- **Profile Management**  
+  Update your email and password, and view your grocery list to keep everything organized.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
-
+<!-- TOP CONTRIBUTORS -->
 ### Top contributors:
 
 <a href="https://github.com/sonboiii/2800-202510-BBY18/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=sonboiii/2800-202510-BBY18" alt="contrib.rocks image" />
 </a>
 
-
-
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-This project is built for comp2800 course.
+### OpenAI API via OpenRouter.ai
+- **Model:** `qwen/qwen3-8b:free` (conversational model)
+- Use cases:
+  - Generating appetizing recipe descriptions and summaries based on ingredients and instructions.
+  - Creating short, enticing descriptions of various cuisine areas (e.g., Italian, Japanese).
 
-A certain level of assistance from AI is presented.
+### Anthropic Claude via OpenRouter.ai
+- **Model:** `anthropic/claude-3-haiku` (conversational model)
+- Use cases:
+  - Fetching random, engaging food trivia as fun facts.
+
+### Overpass API (OpenStreetMap data)
+- Use cases:
+  - Looking up nearby grocery stores based on user-provided latitude and longitude.
+  - Searching for stores tagged as supermarkets or grocery shops within a 25 km radius.
+  - Providing store data to the front-end for rendering store lists.
+
+### WeatherAPI.com
+- Use cases:
+  - Fetching real-time weather information for user-specified locations.
+
+### AI-Assisted Development
+Parts of this project's codebase were generated using **ChatGPT** to enhance productivity and accelerate development.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
