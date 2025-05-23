@@ -162,6 +162,10 @@ This is an example of how to list things you need to use the software and how to
    SITE_URL=localhost
    SITE_TITLE=Foodie
    ```
+
+### Testing Plan
+
+Check out our [Testing Plan](https://docs.google.com/spreadsheets/d/1QHzpamqOnVRuHDg5ZzmaTi3cihk4ygsat7a5Z__W_7Y/edit?gid=394496370#gid=394496370).
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
