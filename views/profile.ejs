@@ -10,6 +10,26 @@
     </div>
   </div>
 
+  <% if (groceryList && groceryList.length > 0) { %>
+    <div class="card mb-4 shadow-sm border-success">
+      <div class="card-body">
+        <h5 class="card-title text-success">Grocery List</h5>
+        <ul class="list-group list-group-flush text-start">
+          <% groceryList.forEach(item => { %>
+            <li class="list-group-item">
+              <strong><%= item.name %></strong>
+              <% if (item.measure) { %> — <%= item.measure %> <% } %>
+            </li>
+          <% }) %>
+        </ul>
+      </div>
+    </div>
+  <% } else { %>
+    <div class="text-muted text-center mb-4">
+      No ingredients added to your grocery list yet.
+    </div>
+  <% } %>
+
   <form action="/profile" method="POST">
     <div class="mb-3">
       <label for="name" class="form-label">Name</label>

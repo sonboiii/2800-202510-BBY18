@@ -1,5 +1,4 @@
 // Basic Server Set up
-// Make sure you install required modules to test/run
 require('dotenv').config();
 const express = require('express');
 const path = require('path');
@@ -19,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.set('trust proxy', true);
 
+// Middleware to restrict access to authenticated users
 function requireLogin(req, res, next) {
   if (!req.session.user) {
     return res.redirect('/login');
@@ -26,6 +26,7 @@ function requireLogin(req, res, next) {
   next();
 }
 
+// Configure session handling with MongoDB store
 app.use(session({
   secret: process.env.NODE_SESSION_SECRET,
   resave: false,
@@ -38,6 +39,7 @@ app.use(session({
   })
 }));
 
+// Set global template variables and handle flash messages
 app.use((req, res, next) => {
   res.locals.user = req.session.user || undefined;
   res.locals.formError = req.session.formError;
@@ -65,7 +67,7 @@ connectDB().then(db => {
   const authRoutes = require('./routes/authRoutes')(db);
 
 
-
+  // Mount routes
   app.use(auth.router);
   app.use('/profile', profileRouter);
   app.use('/pantry', pantryRouter);
@@ -88,7 +90,6 @@ connectDB().then(db => {
     res.render('home', { user: req.session.user });
   });
 
-
   app.use(session({
     secret: process.env.NODE_SESSION_SECRET,
     resave: false,
@@ -103,7 +104,6 @@ connectDB().then(db => {
       maxAge: (60 * 60 * 1000) * 2,
     }
   }));
-
 
   app.get('/stores', async (req, res, next) => {
     try {
@@ -121,12 +121,29 @@ connectDB().then(db => {
         });
       }
 
+      // Get grocery list from session
+      const groceryList = req.session.groceryList || [];
+
+      // Normalize names
+      const names = groceryList.map(i => i.name.toLowerCase());
+
+      // Load or query tags
+      const ingredientTags = require('./data/ingredient-tags.json'); // or from Mongo
+      const storeTags = new Set();
+
+      names.forEach(name => {
+        const tags = ingredientTags[name] || [];
+        tags.forEach(tag => storeTags.add(tag));
+      });
+
       // 2️⃣ POI lookup (Overpass) using the precise coords
+      const tagsToQuery = Array.from(storeTags).join('|') || 'supermarket|grocery';
+
       const overpassQuery = `
       [out:json][timeout:10];
-      node["shop"~"supermarket|grocery"](around:1000,${lat},${lon});
+      node["shop"~"${tagsToQuery}"](around:25000,${lat},${lon});
       out center;
-    `;
+      `;
       const poiUrl = 'https://overpass-api.de/api/interpreter?data='
         + encodeURIComponent(overpassQuery);
       const poiResp = await fetch(poiUrl);
@@ -176,16 +193,11 @@ connectDB().then(db => {
     }
   });
 
-
-
-  app.get('/globe', (req, res) => {
+  app.get('/globe', requireLogin, (req, res) => {
     res.render('globe');
   });
 
-
-  /* END Route Section */
-
-
+  // 404 handler
   app.use(function (req, res) {
     res.status(404);
     res.render('404', { title: 'Page Not Found' });

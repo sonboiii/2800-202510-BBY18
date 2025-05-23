@@ -1,84 +1,139 @@
 const express = require('express');
-const router = express.Router();
+const { ObjectId } = require('mongodb');
+const natural = require('natural');
+const stemmer = natural.PorterStemmer;
+
+function normalizeName(name = '') {
+  return stemmer.stem(name.toLowerCase().trim());
+}
+
+function countMatchedIngredients(meal, pantryNames) {
+  const normalizedIngredients = meal.ingredients.map(ing => normalizeName(ing.name)).filter(Boolean);
+  const matchedCount = normalizedIngredients.filter(ing => pantryNames.includes(ing)).length;
+  return {
+    total: normalizedIngredients.length,
+    matched: matchedCount
+  };
+}
 
 module.exports = function (db) {
-    const favouritesCollection = db.collection('favourites');
+  const router = express.Router();
 
-    // Add favourite recipes by id
-    router.post('/:mealId', async (req, res) => {
-        if (!req.session.user) {
-            return res.status(401).send('Unauthorized');
-        }
+  router.get('/', async (req, res, next) => {
+    try {
+      const user = req.session.user;
+      if (!user) return res.status(401).redirect('/login');
 
-        const userId = req.session.user._id;
-        const mealId = req.params.mealId;
+      const { category, area } = req.query;
+      const favourites = await db.collection('favourites').find({ userId: user._id }).toArray(); //fetches the user's fav recipes
+      const favouriteMealIds = favourites.map(f => f.mealId); // extracts the meal ID
 
-        try {
-            // check for existing favourites
-            const exists = await favouritesCollection.findOne({
-                userId,
-                mealId,
-            });
+      if (favouriteMealIds.length === 0) { // render empty view if no favourites
+        return res.render('favourites', {
+          meals: [],
+          categories: [],
+          areas: [],
+          category: '',
+          area: '',
+          request: req
+        });
+      }
+      const mealQueryIds = favouriteMealIds.map(id =>
+        typeof id === 'string' && id.length === 24 ? new ObjectId(id) : id
+      );
 
-            if (!exists) {
-                await favouritesCollection.insertOne({
-                    userId,
-                    mealId,
-                    createdAt: new Date()
-                });
-            }
+      const allFavourites = await db.collection('meals').find({ 
+        _id: { $in: mealQueryIds } // fetch favourite means from database by ID
+      }).toArray();
 
-            res.redirect(req.get('referer') || '/');
+      const pantryItems = await db.collection('pantryItems').find({ userId: user._id }).toArray();
+      const pantryNames = pantryItems.map(item => normalizeName(item.name));
 
-        } catch (err) {
-            console.error('Error adding to favourites:', err);
-            res.status(500).send('Internal Server Error');
-        }
+      const allFavouriteEntries = await db.collection('favourites').find().toArray();
+      const countMap = {};
+      allFavouriteEntries.forEach(entry => {
+        const key = String(entry.mealId);
+        countMap[key] = (countMap[key] || 0) + 1; // counts how many users favourited a meal
+      });
+
+      const favouritesWithStatus = allFavourites.map(meal => ({
+        ...meal,
+        ingredientStatus: countMatchedIngredients(meal, pantryNames),
+        favouriteCount: countMap[String(meal._id)] || 0
+      }));
+
+      const categories = [...new Set(allFavourites.map(m => m.category).filter(Boolean))].sort();
+      const areas = [...new Set(allFavourites.map(m => m.area).filter(Boolean))].sort();
+      let filteredMeals = favouritesWithStatus;
+      if (category) filteredMeals = filteredMeals.filter(m => m.category === category);
+      if (area) filteredMeals = filteredMeals.filter(m => m.area === area);
+
+      res.render('favourites', {
+        meals: filteredMeals, 
+        categories,
+        areas,
+        category: category || '',
+        area: area || '',
+        request: req
+      });
+
+    } catch (err) {
+      next(err);
+    }
+  });
+
+  // Add a meal to favourites
+router.post('/:id', async (req, res, next) => {
+  try {
+    const user = req.session.user;
+    const mealId = req.params.id;
+
+    if (!user) return res.status(401).redirect('/login');
+    if (!mealId) return res.status(400).send("Meal ID required.");
+
+    // Prevent duplicates
+    const existing = await db.collection('favourites').findOne({
+      userId: user._id,
+      mealId
     });
 
-    router.get('/', async (req, res) => {
-        if (!req.session.user) {
-            return res.redirect('/login');
-        }
+    if (!existing) {
+      await db.collection('favourites').insertOne({
+        userId: user._id,
+        mealId
+      });
+    }
 
-        const userId = req.session.user._id;
-
-        try {
-            const favs = await favouritesCollection.find({
-                userId: (userId)
-            }).toArray();
-
-            const mealIds = favs.map(f => f.mealId);
-            const meals = await db.collection('meals')
-                .find({ _id: { $in: mealIds } })
-                .toArray();
+    const redirectUrl = req.get('Referer') || '/available-recipes';
+    res.redirect(redirectUrl);
+  } catch (err) {
+    next(err);
+  }
+});
 
 
-            res.render('favourites', { meals });
-        } catch (err) {
-            console.error('Error loading favourites:', err);
-            res.status(500).send('Error loading favourites');
-        }
-    });
+  // Remove a meal from favourites
+  router.post('/remove/:id', async (req, res, next) => {
+    try {
+      const user = req.session.user;
+      const mealId = req.params.id;
 
-    router.post('/remove/:mealId', async (req, res) => {
-        if (!req.session.user) {
-            return res.status(401).send('Unauthorized');
-        }
+      if (!user) return res.status(401).redirect('/login');
+      if (!mealId) return res.status(400).send("Meal ID required.");
 
-        const userId = req.session.user._id;
-        const mealId = req.params.mealId;
+      await db.collection('favourites').deleteOne({
+        userId: user._id,
+        mealId: mealId
+      });
 
-        try {
-            await db.collection('favourites').deleteOne({ userId, mealId });
-            res.redirect(req.get('referer') || '/');
-        } catch (err) {
-            console.error('Error removing from favourites:', err);
-            res.status(500).send('Internal Server Error');
-        }
-    });
+      const redirectUrl = req.get('Referer') || '/favourites';
+      res.redirect(redirectUrl);
+
+    } catch (err) {
+      next(err);
+    }
+  });
 
 
-
-    return router;
+  return router;
 };
