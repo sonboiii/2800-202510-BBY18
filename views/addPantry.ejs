@@ -6,12 +6,14 @@
 
             <div class="mb-3">
                 <label for="name" class="form-label">Ingredient</label>
-                <input type="text" name="name" id="name" class="form-control" placeholder="Ingredient Name" required>
+                <input type="text" name="name" id="name" class="form-control" placeholder="Ingredient Name"
+                    pattern="[A-Za-z\s\-]+" title="Only letters, spaces, and dashes allowed" required>
             </div>
 
             <div class="mb-3">
                 <label for="quantity" class="form-label">Quantity</label>
-                <input type="number" name="quantity" id="quantity" class="form-control" placeholder="Quantity" min="0" required>
+                <input type="number" name="quantity" id="quantity" class="form-control" placeholder="Quantity" min="0"
+                    required>
             </div>
 
             <div class="mb-3">
@@ -22,7 +24,7 @@
                     <option value="ml">ml</option>
                 </select>
             </div>
-            
+
             <div class="mb-3">
                 <label for="category" class="form-label">Category</label>
                 <select name="category" id="category" class="form-select">
@@ -48,4 +50,4 @@
         </form>
     </div>
 
- <%- include('templates/footer', { jsFiles: ['/js/addPantry.js'] }) %>
+    <%- include('templates/footer', { jsFiles: ['/js/addPantry.js'] }) %>
