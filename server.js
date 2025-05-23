@@ -32,7 +32,10 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   store: MongoStore.create({
-    mongoUrl: mongoUri
+    mongoUrl: mongoUri,
+    crypto: {
+      secret: process.env.MONGODB_SESSION_SECRET
+    }
   })
 }));
 
@@ -86,7 +89,22 @@ connectDB().then(db => {
   app.get('/home', requireLogin, (req, res) => {
     res.render('home', { user: req.session.user });
   });
-  
+
+  app.use(session({
+    secret: process.env.NODE_SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: mongoUri,
+      crypto: {
+        secret: process.env.MONGODB_SESSION_SECRET
+      }
+    }),
+    cookie: {
+      maxAge: (60 * 60 * 1000) * 2,
+    }
+  }));
+
   app.get('/stores', async (req, res, next) => {
     try {
       // 1️⃣ Must have lat & lon from client (e.g. Leaflet.map.locate)
