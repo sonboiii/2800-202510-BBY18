@@ -12,7 +12,7 @@
 <br />
 <div align="center">
   <a href="https://github.com/sonboiii/2800-202510-BBY18">
-    <img src="public/images/foodieWhite.png" alt="Logo" width="80" height="80">
+    <img src="public/images/foodieWhite.png" alt="Logo" width="400" height="80">
   </a>
 
 <h3 align="center">Foodie</h3>
