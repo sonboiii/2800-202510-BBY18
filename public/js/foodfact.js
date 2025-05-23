@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const factText = document.getElementById('food-fact-text');
     const refreshBtn = document.getElementById('refresh-food-fact');
+    const foodFactIcon = document.getElementById('food-fact-icon');
 
     async function loadFoodFact() {
         if (factText) factText.textContent = "Loading...";
@@ -11,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (data.fact) {
                 factText.textContent = data.fact;
+                if (foodFactIcon) foodFactIcon.style.display = 'none';
             } else {
                 factText.textContent = "Could not fetch a food fact.";
             }

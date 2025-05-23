@@ -1,35 +1,60 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Nearby Grocery Stores</title>
-    <link
-            rel="stylesheet"
-            href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css"
-    />
-    <style>
-        html, body { margin:0; padding:0; height:100%; }
-        #map { width:100%; height:100%; }
-        #enable-loc {
-            position: absolute;
-            top: 10px; left: 50%;
-            transform: translateX(-50%);
-            z-index: 1000;
-            padding: .5em 1em;
-            background: white;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-    </style>
-</head>
-<body>
+<%- include('templates/header', { 
+    title: 'Nearby Grocery Stores',
+    cssFiles: ['https://unpkg.com/leaflet@1.9.3/dist/leaflet.css'],
+}) %>
+
+<style>
+    /* Override Bootstrap container constraints for full-screen map */
+    .map-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1;
+    }
+    
+    /* Ensure navbar stays on top */
+    .navbar {
+        position: relative;
+        z-index: 1002;
+        margin-bottom: 0 !important;
+    }
+    
+    /* Ensure footer stays on top when visible */
+    footer {
+        position: relative;
+        z-index: 1002;
+    }
+    
+    #map { 
+        width: 100%; 
+        height: 100vh;
+    }
+    
+    #enable-loc {
+        position: absolute;
+        top: 80px; 
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 1000;
+        padding: .5em 1em;
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+</style>
+
 <!-- Button to trigger geolocation prompt -->
 <button id="enable-loc">
     <%= (lat && lon) ? 'Refresh Precise Location' : 'Enable Precise Location' %>
 </button>
 
-<div id="map"></div>
+<div class="map-container">
+    <div id="map"></div>
+</div>
 
 <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
 <script>
@@ -41,7 +66,7 @@
     // If no coords yet, show world view; otherwise zoom into the user
     const initialView = (serverLat && serverLon)
         ? [serverLat, serverLon]
-        : [20, 0];       // arbitrary “world” center
+        : [20, 0];      
     const initialZoom = (serverLat && serverLon) ? 15 : 2;
 
     const map = L.map('map').setView(initialView, initialZoom);
@@ -49,7 +74,7 @@
         attribution: '© OpenStreetMap contributors'
     }).addTo(map);
 
-    // If we have real coords, plot the user + stores
+    // If we have real coords, plot the user and stores
     if (serverLat && serverLon) {
         L.marker([serverLat, serverLon])
             .addTo(map)
@@ -62,11 +87,10 @@
                 .bindPopup(s.name);
         });
 
-        // hide the button once we’re done
         document.getElementById('enable-loc').style.display = 'none';
     }
 
-    // On click, ask for HTML5 Geolocation and reload with ?lat=…&lon=…
+    // On click, ask for HTML5 Geolocation
     document.getElementById('enable-loc').onclick = () => {
         if (!navigator.geolocation) {
             return alert('Geolocation not supported by your browser');
@@ -85,5 +109,5 @@
         );
     };
 </script>
-</body>
-</html>
+
+<%- include('templates/footer') %>

@@ -1,61 +1,101 @@
 <%- include('templates/header', { title: 'Dashboard' }) %>
 
 <div class="text-center">
-    <h2 id="greeting" class="mb-5 fw-bold" data-username="<%= user?.name || '' %>!"></h2>
-    <h3 id="location" class="text-center fs-8 fw-bold text-muted"></h3>
-    <h3 id="current-time" class="text-center fs-8 fw-bold text-secondary"></h3>
-    <h3 id="meal-time-msg" class="text-center  fs-8 fw-bold text-muted"></h3>
-    <button id="store-btn" class="btn btn-primary mt-3 fancy-hover">Closest Store</button>
-    <button id="ingredient-btn" class="btn btn-primary mt-3 fancy-hover">Ingredients</button>
-    <button id="globe-btn" class="btn btn-primary mt-3 fancy-hover">Globe</button>
-    <button id="pantry-btn" class="btn btn-primary mt-3 fancy-hover">Pantry</button>
-    <button id="fav-btn" class="btn btn-primary mt-3 fancy-hover">Fav Recipes</button>
+    <h2 id="greeting" class="fw-bold" data-username="<%= user?.name || '' %>!"></h2>
+    <h4 id="location" class="text-center fs-8 text-success"></h4>
+    <h4 id="current-time" class="text-center fs-8 text-success"></h4>
+    <h3 id="meal-time-msg" class="text-center fw-bold fs-8"></h3>
 </div>
 
-<!--Tentative placement-->
-<div class="card mt-5 mx-auto" style="max-width: 500px;">
-  <div class="card-body text-center">
-    <h5 class="card-title">See What You Can Make</h5>
-    <p class="card-text">Find recipes you can cook today!</p>
-    <a href="/available-recipes" class="btn btn-outline-primary fancy-hover">View Available Recipes</a>
+<div class="container mt-5">
+  <div class="row justify-content-center g-4">
+    <!-- Card 1 -->
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="card text-center h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">Pantry</h5>
+          <p class="card-text">Manage your pantry items easily.</p>
+          <img src="/images/pantry.svg" alt="Pantry Icon" style="width: 60px; height: auto;" class="mx-auto mb-3">
+          <a href="/pantry" class="btn btn-orange mt-auto fancy-hover">Go to Pantry</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 2 -->
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="card text-center h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">Stores</h5>
+          <p class="card-text">Find specialty stores nearby.</p>
+          <img src="/images/stores.svg" alt="Store Icon" style="width: 60px; height: auto;" class="mx-auto mb-3">
+          <a href="/stores" class="btn btn-orange mt-auto fancy-hover">Visit Stores</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="card text-center h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">Globe</h5>
+          <p class="card-text">Explore cuisines around the world.</p>
+          <img src="/images/globe.svg" alt="Globe Icon" style="width: 60px; height: auto;" class="mx-auto mb-3">
+          <a href="/globe" class="btn btn-orange mt-auto fancy-hover">Explore Globe</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="card text-center h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">Pantry Recipes</h5>
+          <p class="card-text">Cook with what you have.</p>
+          <img src="/images/recipe.svg" alt="Recipes Icon" style="width: 60px; height: auto;" class="mx-auto mb-3">
+          <a href="/available-recipes" class="btn btn-orange mt-auto fancy-hover">View Recipes</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 5 -->
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="card text-center h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">Food Fact</h5>
+          <p class="card-text">Discover fun facts about food.</p>
+          <img id="food-fact-icon" src="/images/food-fact.svg" alt="Food Icon" style="width: 60px; height: auto;" class="mx-auto mb-3">
+          <p id="food-fact-text" class="card-text text-muted"></p>
+          <a href="#" id="refresh-food-fact" class="btn btn-orange mt-auto fancy-hover">Get a Food Fact</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 6 -->
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="card text-center h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">Ingredient Search</h5>
+          <p class="card-text">Search recipes by ingredients.</p>
+          <img src="/images/ingredients.svg" alt="Ingredients Icon" style="width: 60px; height: auto;" class="mx-auto mb-3">
+          <a href="/ingredients" class="btn btn-orange mt-auto fancy-hover">Search Recipes</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 7 -->
+    <div class="col-12 col-md-4 col-lg-3">
+      <div class="card text-center h-100">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">Favourites</h5>
+          <p class="card-text">Access your favorite recipes.</p>
+          <img src="/images/favourite.svg" alt="Favourite Icon" style="width: 60px; height: auto;" class="mx-auto mb-3">
+          <a href="/favourites" class="btn btn-orange mt-auto fancy-hover">View Favourites</a>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-
-<!-- AI Food Fact Section -->
-<div class="card mt-4 mx-auto text-center" style="max-width: 600px;">
-  <div class="card-body">
-    <h5 class="card-title">Fun Food Fact!</h5>
-    <p id="food-fact-text" class="card-text text-muted">Click the button to discover a food fact!</p>
-    <button id="refresh-food-fact" class="btn btn-outline-info btn-sm mt-2">Get a Food Fact</button>
-  </div>
-</div>
-
 
 <%- include('templates/footer', {
 jsFiles: ['/js/location.js', '/js/greetingTime.js', '/js/foodfact.js']
 }) %>
-
-<script>
-  document.getElementById('store-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.location.href = '/stores';
-  });
-
-  document.getElementById('ingredient-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.location.href = '/ingredients';
-  });
-
-  document.getElementById('globe-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.location.href = '/globe';
-  });
-  document.getElementById('pantry-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.location.href = '/pantry';
-  });
-  document.getElementById('fav-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.location.href = '/favourites';
-  });
-</script>

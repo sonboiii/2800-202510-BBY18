@@ -34,6 +34,7 @@ module.exports = function (db) {
     const { _id, ...raw } = req.body;
     const userId = (req.session.user._id);
 
+    // Normalize and clean up input
     const normalizedName = raw.name.trim().toLowerCase(); // case sensitivity matching
     const normalizedExpiration = raw.expirationDate?.trim() || null;
 
@@ -43,6 +44,7 @@ module.exports = function (db) {
       expirationDate: normalizedExpiration
     };
 
+    // Check for duplicate item (case-insensitive name match)
     const duplicate = await db.collection('pantryItems').findOne({
       userId,
       name: { $regex: `^${normalizedName}$`, $options: 'i' },
@@ -55,6 +57,7 @@ module.exports = function (db) {
       return res.status(409).json({ duplicate: true, message: 'Similar item already exists' });
     }
 
+    // Create pantry item document
     const pantryItem = {
       ...cleaned,
       userId,
@@ -155,6 +158,7 @@ router.post('/restore', async (req, res, next) => {
   }
 
   try {
+    // Clean up items before re-insertion
     const restored = items.map(({ _id, userId, addedAt, forceInsert, ...rest }) => ({
       ...rest,
       userId: req.session.user._id,

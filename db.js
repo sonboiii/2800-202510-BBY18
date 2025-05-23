@@ -3,11 +3,13 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
+// Construct the MongoDB connection URI using environment variables
 const uri = `mongodb+srv://${process.env.MONGODB_USER}:${process.env.MONGODB_PASSWORD}` +
   `@${process.env.MONGODB_HOST}/${process.env.MONGODB_DATABASE}?retryWrites=true&w=majority`;
 let db;
 let client; 
 
+// Function to connect to the MongoDB database
 async function connectDB() {
   if (db) return db; // Return existing connection if it exists
 
@@ -24,6 +26,7 @@ async function connectDB() {
   }
 }
 
+// Function to gracefully close the MongoDB connection
 async function closeDB() {
   if (client) {
     await client.close();

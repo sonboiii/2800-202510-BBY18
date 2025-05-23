@@ -1,14 +1,19 @@
 <%- include('templates/header', { title: 'About' }) %>
 
-<h1 class="mb-3">Team Information</h1>
-<p>Team Name: <strong>BBY-18</strong></p>
-<p>Team Members: 5</p>
-<ul>
-  <li>Tsang, Aaron</li>
-  <li>Kadam, Kavin</li>
-  <li>Fung, Samuel</li>
-  <li>Mei, Meiko</li>
-  <li>Bui, Son</li>
-</ul>
+<div class="container my-5">
+  <h1 class="mb-4 text-orange fw-bold">Team Information</h1>
+  
+  <p><strong>Team Name:</strong> <span class="text-secondary">BBY-18</span></p>
+  <p><strong>Number of Team Members:</strong> <span class="text-secondary">5</span></p>
+  
+  <h3 class="mt-4 mb-3">Members</h3>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item">Tsang, Aaron</li>
+    <li class="list-group-item">Kadam, Kavin</li>
+    <li class="list-group-item">Fung, Samuel</li>
+    <li class="list-group-item">Mei, Meiko</li>
+    <li class="list-group-item">Bui, Son</li>
+  </ul>
+</div>
 
 <%- include('templates/footer') %>
