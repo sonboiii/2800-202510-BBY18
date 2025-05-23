@@ -211,27 +211,6 @@ connectDB().then(db => {
     res.render('globe');
   });
 
-  // Location API route - fetches client's approximate location via external IP API
-  app.get('/api/location', async (req, res) => {
-    try {
-      const response = await fetch('http://ip-api.com/json/');
-      if (!response.ok) {
-        throw new Error(`ip-api.com responded with ${response.status}`);
-      }
-
-      const data = await response.json();
-
-      res.json({
-        city: data.city,
-        region_code: data.region
-      });
-
-    } catch (error) {
-      console.error('Error fetching location:', error);
-      res.status(500).json({ error: 'Failed to fetch location data' });
-    }
-  });
-
   // 404 handler
   app.use(function (req, res) {
     res.status(404);
