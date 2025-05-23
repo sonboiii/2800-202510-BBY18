@@ -12,7 +12,7 @@
 <br />
 <div>
   <a href="https://github.com/sonboiii/2800-202510-BBY18">
-    <img src="public/images/foodieWhite.png" alt="Logo" width="470" height="80">
+    <img src="public/images/foodieWhite.png" alt="Logo" width="450" height="80">
   </a>
 
 <h3 align="center">Foodie</h3>
@@ -25,27 +25,6 @@
     <a href="https://foodie-0fu4.onrender.com">View Demo</a>
   </p>
 </div>
-
-
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-    </li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
-  </ol>
-</details>
-
 
 
 <!-- ABOUT THE PROJECT -->
