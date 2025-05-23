@@ -30,7 +30,7 @@ main {
 
 /* Button styling */
 .btn-orange {
-    background-color: #ff6f00;
+    background-color: #f08e34;
     color: white;
     border: none;
     padding: 0.6rem 1.2rem;
@@ -39,12 +39,12 @@ main {
 }
 
 .btn-orange:hover {
-    background-color: #e65100;
+    background-color: #ef8018;
 }
 
 /* Text color utility */
 .text-orange {
-    color: #ff6f00;
+    color: #f08e34;
 }
 
 /* Sticky footer */
