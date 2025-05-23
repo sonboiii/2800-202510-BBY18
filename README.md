@@ -10,7 +10,7 @@
 
 <!-- PROJECT LOGO -->
 <br />
-<div align="center">
+<div>
   <a href="https://github.com/sonboiii/2800-202510-BBY18">
     <img src="public/images/foodieWhite.png" alt="Logo" width="400" height="80">
   </a>
