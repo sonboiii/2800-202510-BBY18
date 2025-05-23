@@ -79,6 +79,7 @@ connectDB().then(db => {
   app.use(authRoutes);
 
   /* Routes Section */
+  // Root route
   app.get('/', (req, res) => {
     if (req.session.user) {
       return res.redirect('/home');
@@ -86,14 +87,17 @@ connectDB().then(db => {
     res.render('index', { title: 'Welcome' });
   });
 
+  // About page route - static content
   app.get('/about', (req, res) => {
     res.render('about', { title: 'About' });
   });
 
+  // Home route - protected, requires login
   app.get('/home', requireLogin, (req, res) => {
     res.render('home', { user: req.session.user });
   });
 
+  // Session middleware setup with MongoDB store and 2-hour expiry
   app.use(session({
     secret: process.env.NODE_SESSION_SECRET,
     resave: false,
@@ -109,6 +113,7 @@ connectDB().then(db => {
     }
   }));
 
+  // Stores route - shows nearby grocery stores based on latitude/longitude query params
   app.get('/stores', async (req, res, next) => {
     try {
       // 1️⃣ Must have lat & lon from client (e.g. Leaflet.map.locate)
@@ -168,6 +173,7 @@ connectDB().then(db => {
     }
   });
 
+  // Weather route - fetches weather info for given location query param
   app.get('/weather', async (req, res) => {
     const locationQuery = req.query.location;
 
@@ -200,8 +206,30 @@ connectDB().then(db => {
     }
   });
 
+  // Globe page route - protected by login middleware
   app.get('/globe', requireLogin, (req, res) => {
     res.render('globe');
+  });
+
+  // Location API route - fetches client's approximate location via external IP API
+  app.get('/api/location', async (req, res) => {
+    try {
+      const response = await fetch('http://ip-api.com/json/');
+      if (!response.ok) {
+        throw new Error(`ip-api.com responded with ${response.status}`);
+      }
+
+      const data = await response.json();
+
+      res.json({
+        city: data.city,
+        region_code: data.region
+      });
+
+    } catch (error) {
+      console.error('Error fetching location:', error);
+      res.status(500).json({ error: 'Failed to fetch location data' });
+    }
   });
 
   // 404 handler
@@ -210,6 +238,7 @@ connectDB().then(db => {
     res.render('404', { title: 'Page Not Found' });
   });
 
+  // Start Express server and listen on specified port
   app.listen(PORT, () => console.log(`Server is running at http://localhost:${PORT}`));
 }).catch(err => {
   console.error('Failed to start server:', err);

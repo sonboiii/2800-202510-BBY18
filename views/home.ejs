@@ -1,10 +1,10 @@
 <%- include('templates/header', { title: 'Dashboard' }) %>
 
 <div class="text-center">
-    <h2 id="greeting" class="mb-5 fw-bold" data-username="<%= user?.name || '' %>!"></h2>
-    <h3 id="location" class="text-center fs-8 fw-bold text-muted"></h3>
-    <h3 id="current-time" class="text-center fs-8 fw-bold text-secondary"></h3>
-    <h3 id="meal-time-msg" class="text-center  fs-8 fw-bold text-muted"></h3>
+    <h2 id="greeting" class="fw-bold" data-username="<%= user?.name || '' %>!"></h2>
+    <h4 id="location" class="text-center fs-8 text-success"></h4>
+    <h4 id="current-time" class="text-center fs-8 text-success"></h4>
+    <h3 id="meal-time-msg" class="text-center fw-bold fs-8"></h3>
 </div>
 
 <div class="container mt-5">
