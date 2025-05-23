@@ -5,10 +5,10 @@
     <h3 id="location" class="text-center fs-8 fw-bold text-muted"></h3>
     <h3 id="current-time" class="text-center fs-8 fw-bold text-secondary"></h3>
     <h3 id="meal-time-msg" class="text-center  fs-8 fw-bold text-muted"></h3>
-    <button id="store-btn" class="btn btn-primary mt-3 fancy-hover">Closest Store</button>
+    <!-- <button id="store-btn" class="btn btn-primary mt-3 fancy-hover">Closest Store</button> -->
     <button id="ingredient-btn" class="btn btn-primary mt-3 fancy-hover">Ingredients</button>
-    <button id="globe-btn" class="btn btn-primary mt-3 fancy-hover">Globe</button>
-    <button id="pantry-btn" class="btn btn-primary mt-3 fancy-hover">Pantry</button>
+    <!-- <button id="globe-btn" class="btn btn-primary mt-3 fancy-hover">Globe</button>
+    <button id="pantry-btn" class="btn btn-primary mt-3 fancy-hover">Pantry</button> -->
     <button id="fav-btn" class="btn btn-primary mt-3 fancy-hover">Fav Recipes</button>
 </div>
 
@@ -30,30 +30,29 @@
   </div>
 </div>
 
-
 <%- include('templates/footer', {
 jsFiles: ['/js/location.js', '/js/greeting_time.js', '/js/foodfact.js']
 }) %>
 
 <script>
-  document.getElementById('store-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.location.href = '/stores';
-  });
+  // document.getElementById('store-btn').addEventListener('click', function(e) {
+  //   e.preventDefault();
+  //   window.location.href = '/stores';
+  // });
 
   document.getElementById('ingredient-btn').addEventListener('click', function(e) {
     e.preventDefault();
     window.location.href = '/ingredients';
   });
 
-  document.getElementById('globe-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.location.href = '/globe';
-  });
-  document.getElementById('pantry-btn').addEventListener('click', function(e) {
-    e.preventDefault();
-    window.location.href = '/pantry';
-  });
+  // document.getElementById('globe-btn').addEventListener('click', function(e) {
+  //   e.preventDefault();
+  //   window.location.href = '/globe';
+  // });
+  // document.getElementById('pantry-btn').addEventListener('click', function(e) {
+  //   e.preventDefault();
+  //   window.location.href = '/pantry';
+  // });
   document.getElementById('fav-btn').addEventListener('click', function(e) {
     e.preventDefault();
     window.location.href = '/favourites';

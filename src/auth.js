@@ -7,6 +7,7 @@ const { ObjectId } = require('mongodb');
 module.exports = function (db) {
   const router = express.Router();
 
+  // Middleware to protect routes from unauthorized access
   function requireLogin(req, res, next) {
     if (!req.session.user) return res.redirect('/login');
     next();
@@ -19,6 +20,7 @@ module.exports = function (db) {
   router.post('/signup', async (req, res) => {
     console.log('Signup POST body:', req.body);
 
+    // Validate incoming signup data
     const schema = Joi.object({
       name: Joi.string().max(255).required(),
       email: Joi.string().email().required(),
@@ -30,19 +32,32 @@ module.exports = function (db) {
 
     try {
       const users = db.collection('users');
+
+      // Check if the email already exists
       const existingUser = await users.findOne({ email: value.email });
       if (existingUser) return res.status(400).send('Email already exists');
 
+      // Hash the user's password
       const hashedPassword = await bcrypt.hash(value.password, 10);
+
+      // Create the new user object
       const newUser = {
         name: value.name,
         email: value.email,
         password: hashedPassword
       };
 
+      // Insert the new user into the database
       const result = await users.insertOne(newUser);
-      req.session.user = { _id: result.insertedId, name: newUser.name, email: newUser.email };
 
+      // Start a session for the new user
+      req.session.user = { 
+        _id: result.insertedId, 
+        name: newUser.name, 
+        email: newUser.email 
+      };
+
+      // Redirect to home after signup
       req.session.save(() => res.redirect('/home'));
     } catch (err) {
       console.error('Signup error:', err);
@@ -55,6 +70,8 @@ module.exports = function (db) {
   });
 
   router.post('/login', async (req, res) => {
+
+    // Validate login form data
     const schema = Joi.object({
       email: Joi.string().email().required(),
       password: Joi.string().required()
@@ -70,14 +87,23 @@ module.exports = function (db) {
 
     try {
       const users = db.collection('users');
+
+      // Find the user by email
       const user = await users.findOne({ email: value.email });
 
+      // Verify user and password match
       if (!user || !(await bcrypt.compare(value.password, user.password))) {
         return res.status(401).send('Invalid email/password combination');
       }
 
-      req.session.user = { _id: user._id, name: user.name, email: user.email };
+      // Store user session
+      req.session.user = { 
+        _id: user._id, 
+        name: user.name, 
+        email: user.email 
+      };
 
+      // Redirect to home
       req.session.save(() => res.redirect('/home'));
     } catch (err) {
       console.error('Login error:', err);
@@ -95,7 +121,8 @@ module.exports = function (db) {
 
   router.post('/change-password', requireLogin, async (req, res) => {
     const { currentPassword, newPassword, confirmPassword } = req.body;
-  
+    
+    // Validate password change inputs
     const schema = Joi.object({
       currentPassword: Joi.string().required(),
       newPassword: Joi.string().min(6).required(),
@@ -110,14 +137,18 @@ module.exports = function (db) {
   
     try {
       const users = db.collection('users');
+
+      // Find current user in the database
       const user = await users.findOne({ _id: new ObjectId(req.session.user._id) });
-  
+      
+      // Verify the current password
       const passwordMatch = await bcrypt.compare(currentPassword, user.password);
       if (!passwordMatch) {
         req.session.formError = 'Current password is incorrect';
         return res.redirect('/profile');
       }
-  
+      
+      // Hash and update the new password
       const hashedNewPassword = await bcrypt.hash(newPassword, 10);
       await users.updateOne({ _id: user._id }, { $set: { password: hashedNewPassword } });
   
@@ -129,7 +160,6 @@ module.exports = function (db) {
       res.redirect('/profile');
     }
   });
-  
   
   return {
     router,

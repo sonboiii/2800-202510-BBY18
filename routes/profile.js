@@ -7,6 +7,7 @@ module.exports = function (db) {
   const users = db.collection('users');
   const favourites = db.collection('favourites');
 
+  // Middleware to restrict access to authenticated users
   function requireLogin(req, res, next) {
     if (!req.session.user) return res.redirect('/login');
     next();
@@ -34,6 +35,7 @@ module.exports = function (db) {
     return { qty, unit };
   }
 
+  // Utility function to format a quantity and unit as a string
   function formatQuantity(qty, unit) {
     return `${Math.round(qty * 100) / 100} ${unit}`.trim();
   }
@@ -41,10 +43,13 @@ module.exports = function (db) {
   // GET /profile
   router.get('/', requireLogin, async (req, res) => {
     try {
+
+      // Count user's saved favourites
       const favCount = await favourites.countDocuments({
         userId: req.session.user._id
       });
 
+      // Get user's grocery list from session
       const groceryList = req.session.groceryList || [];
 
       res.render('profile', {
@@ -63,6 +68,8 @@ module.exports = function (db) {
     const { name, email } = req.body;
 
     try {
+
+      // Update user info in database
       await users.updateOne(
           { _id: new ObjectId(req.session.user._id) },
           { $set: { name, email } }
@@ -86,27 +93,37 @@ module.exports = function (db) {
         return res.status(400).send("Invalid grocery list format.");
       }
 
+      // Retrieve existing grocery list from session or start with empty
       const existing = req.session.groceryList || [];
       const merged = [...existing];
 
+      // Merge new items with existing list
       parsedItems.forEach(newItem => {
         const existingItem = merged.find(item => item.name.toLowerCase() === newItem.name.toLowerCase());
 
         if (existingItem) {
+
+           // Parse both existing and new measurements
           const { qty: q1, unit: u1 } = parseQuantity(existingItem.measure || '');
           const { qty: q2, unit: u2 } = parseQuantity(newItem.measure || '');
 
+          // Combine quantities if units match and are valid
           if (u1 === u2 && !isNaN(q1) && !isNaN(q2)) {
             const combinedQty = q1 + q2;
             existingItem.measure = formatQuantity(combinedQty, u1);
           } else {
+
+            // Otherwise append both measurements as a string
             existingItem.measure = `${existingItem.measure || ''} + ${newItem.measure}`;
           }
         } else {
+
+          // Add new item to list if it's not already there
           merged.push(newItem);
         }
       });
 
+      // Save updated list in session
       req.session.groceryList = merged;
       res.redirect('/profile');
     } catch (err) {

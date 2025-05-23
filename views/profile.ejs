@@ -10,6 +10,7 @@
     </div>
   </div>
 
+  <!-- Only show grocery list if it's not empty -->
   <% if (groceryList && groceryList.length > 0) { %>
     <div class="card mb-4 shadow-sm border-success">
       <div class="card-body">
@@ -30,6 +31,7 @@
     </div>
   <% } %>
 
+  <!-- Form for updating user name/email -->
   <form action="/profile" method="POST">
     <div class="mb-3">
       <label for="name" class="form-label">Name</label>
@@ -45,6 +47,7 @@
     </button>
   </form>
 
+  <!-- Bootstrap modal for changing password -->
   <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <form action="/change-password" method="POST" class="modal-content">
@@ -83,11 +86,13 @@
 </div>
 
 <script>
+  // Automatically show password modal if error/success message is present
   <% if (formError || formSuccess) { %>
     const changePasswordModal = new bootstrap.Modal(document.getElementById('changePasswordModal'));
     changePasswordModal.show();
   <% } %>
-
+  
+  // Reset password form fields when modal is closed
   const modalEl = document.getElementById('changePasswordModal');
   modalEl.addEventListener('hidden.bs.modal', function () {
     modalEl.querySelector('form').reset();

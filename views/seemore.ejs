@@ -6,13 +6,15 @@
     <% if (meal.thumbnail) { %>
         <img src="<%= meal.thumbnail %>" class="img-fluid rounded my-3" alt="<%= meal.name %>">
     <% } %>
-
+    
+    <!-- Display basic meal metadata -->
     <p><strong>Category:</strong> <%= meal.category %></p>
     <p><strong>Origin:</strong> <%= meal.area %></p>
 
     <h4 class="mt-4">Instructions</h4>
     <p style="white-space: pre-line;"><%= meal.instructions %></p>
-
+    
+    <!-- Form to add ingredients to grocery list -->
     <form id="ingredient-form" action="/profile/grocery-list" method="POST">
         <input type="hidden" name="items" id="grocery-json">
 
@@ -21,7 +23,6 @@
            <% meal.ingredients.forEach((ing, idx) => {
             const inPantry = pantryNames?.includes(ing.normalizedName);
             %>
-
                 <li class="list-group-item d-flex align-items-center justify-content-between">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="include[]" value="<%= idx %>" checked id="check_<%= idx %>">
@@ -45,6 +46,7 @@
         const form = document.getElementById('ingredient-form');
         const total = <%= meal.ingredients.length %>;
 
+        // Enable/disable measurement inputs based on checkbox state
         for (let i = 0; i < total; i++) {
             const checkbox = form.querySelector(`[name="include[]"][value="${i}"]`);
             const measureInput = form.querySelector(`[name="measure_${i}"]`);

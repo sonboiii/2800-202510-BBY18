@@ -11,6 +11,7 @@ const { ObjectId } = require('mongodb');
 const app = express();
 const PORT = 3000;
 
+// View Engine and Static Files
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
@@ -79,7 +80,10 @@ connectDB().then(db => {
 
   /* Routes Section */
   app.get('/', (req, res) => {
-    res.render('index', { title: 'Home' });
+    if (req.session.user) {
+      return res.redirect('/home');
+    }
+    res.render('index', { title: 'Welcome' });
   });
 
   app.get('/about', (req, res) => {
@@ -173,6 +177,8 @@ connectDB().then(db => {
 
     try {
       const weatherUrl = `https://api.weatherapi.com/v1/current.json?key=${process.env.WEATHER_API_KEY}&q=${encodeURIComponent(locationQuery)}&aqi=no`;
+
+      // Fetch current weather data from the Weather API
       const weatherResp = await fetch(weatherUrl);
       const weatherData = await weatherResp.json();
 
@@ -180,6 +186,7 @@ connectDB().then(db => {
         return res.status(500).json({ error: weatherData.error.message });
       }
 
+      // Respond with selected weather data in JSON format
       res.json({
         city: weatherData.location.name,
         region: weatherData.location.region,
